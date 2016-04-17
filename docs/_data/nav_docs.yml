@@ -16,6 +16,10 @@
     title: Conditional Joins
   - id: strong-parameters
     title: Strong Parameters
+  - id: sensitive-fields
+    title: Sensitive Fields
+  - id: stateless-architecture
+    title: Stateless Architecture     
 - title: Community Resources
   items:
   - id: videos
