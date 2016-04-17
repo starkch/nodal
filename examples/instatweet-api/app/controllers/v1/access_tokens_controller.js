@@ -8,12 +8,24 @@ module.exports = (function() {
   class V1AccessTokensController extends Nodal.Controller {
 
     create() {
+
       AccessToken.login(this.params, (err, accessToken) => {
 
         this.respond(err || accessToken);
 
       });
     }
+
+    destroy() {
+
+      AccessToken.logout(this.params, (err, accessToken) => {
+
+        this.respond(err || accessToken);
+
+      });
+
+    }
+    
   }
 
   return V1AccessTokensController;
