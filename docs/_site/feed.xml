@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Nodal</title>
+		<description>A web server for Node.js, optimized for building API services quickly and efficiently.</description>
+		<link>https://facebook.github.io/nodal</link>
+		<atom:link href="https://facebook.github.io/nodal/feed.xml" rel="self" type="application/rss+xml" />
+		
+			<item>
+				<title>Nodal v0.0.9</title>
+				<description>&lt;h2&gt;&lt;a class=&quot;anchor&quot; name=&quot;nodal-0.9-deploy-your-nodal-projects-to-the-cloud-with-polybit&quot;&gt;&lt;/a&gt;Nodal 0.9: Deploy Your Nodal Projects to the Cloud with Polybit &lt;a class=&quot;hash-link&quot; href=&quot;#nodal-0.9-deploy-your-nodal-projects-to-the-cloud-with-polybit&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Hey everyone! I&amp;#39;m pleased today to announce the official release of &lt;a href=&quot;http://github.com/keithwhor/nodal&quot;&gt;Nodal 0.9&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Some of you may have noticed a bit of a slowdown of the Nodal release train - there&amp;#39;s been a good reason. I&amp;#39;m really excited to share what we&amp;#39;ve been working on, and I&amp;#39;d like this to serve as the first introduction to &lt;a href=&quot;http://www.polybit.com/&quot;&gt;Polybit&lt;/a&gt;, an API deployment solution for Nodal projects.&lt;/p&gt;
+&lt;h3&gt;&lt;a class=&quot;anchor&quot; name=&quot;polybit-deploy-your-nodal-api-projects-from-the-command-line&quot;&gt;&lt;/a&gt;Polybit: Deploy Your Nodal API Projects From the Command Line &lt;a class=&quot;hash-link&quot; href=&quot;#polybit-deploy-your-nodal-api-projects-from-the-command-line&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The goal of Polybit is pretty straightforward - setting up infrastructure can be a pain in the behind, and a lot of developers would rather spend their time building products and writing code instead of figuring out how they&amp;#39;re going to get your project live. So we&amp;#39;ve made it simple - one command, nodal &lt;code&gt;poly:deploy&lt;/code&gt;, no hassle.&lt;/p&gt;
+
+&lt;p&gt;Begin with nodal &lt;code&gt;poly:register&lt;/code&gt; and go from there!&lt;/p&gt;
+
+&lt;p&gt;I&amp;#39;ll release more information about Polybit in the coming weeks, but for now, enjoy deploying &lt;em&gt;two projects and two PostgreSQL databases to the cloud, for free&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The commands for deploying to Polybit are pretty straightforward. We don&amp;#39;t use git deployments, we&amp;#39;ll deploy your project folder (for the most part) as is, meaning you can test a staging environment without committing. I would like to make clear the current system is &lt;em&gt;Early Access&lt;/em&gt;, so please report bugs by e-mailing &lt;em&gt;info (at) polybit (dot) com&lt;/em&gt;. You can join the Nodal gitter channel to ask questions or report issues at &lt;a href=&quot;http://gitter.im/keithwhor/nodal&quot;&gt;gitter.im/keithwhor/nodal&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;All projects you create will be available on &lt;code&gt;https://[project].api.poly.cloud&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The following command can be accessed from the Nodal CLI, i.e. by running nodal &lt;code&gt;[command]&lt;/code&gt;. You can check this list any time (while running Nodal 0.9+) by typing nodal &lt;code&gt;help poly&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;poly:create [project]
+    Creates a new, empty project
+
+poly:db:assign [database] [project]
+    Assigns a database to a project
+
+poly:db:create [name]
+    Creates a new database
+
+poly:db:drop [db]
+    Destroys a database
+
+poly:db:list
+    Retrieves a list of all available Polybit databases for current user
+
+poly:deploy [project]
+    Deploys current directory as a Nodal project
+
+poly:env [project]
+    -r                   [key] Removes an environment variable
+    -s                   [key] [value] Sets an environment variable
+    --remove             [key] Removes an environment variable
+    --set                [key] [value] Sets an environment variable
+
+    Retrieves, sets or removes environment variables for a project
+
+poly:list
+    Retrieves a list of all available Polybit projects for current user
+
+poly:login
+    Logs in to Polybit API server
+
+poly:logout
+    Logs out of Polybit API server
+
+poly:register
+    Registers a new Polybit User Account (Required for Deployment)
+
+poly:remove [project]
+    Removes a project
+
+poly:run [project] [command]
+    Runs a Nodal command on your deployed project
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3&gt;&lt;a class=&quot;anchor&quot; name=&quot;other-additions&quot;&gt;&lt;/a&gt;Other Additions &lt;a class=&quot;hash-link&quot; href=&quot;#other-additions&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;We&amp;#39;ve added a few more things to this release and developed two new open source libraries while working on Polybit, &lt;a href=&quot;http://github.com/keithwhor/cmnd&quot;&gt;CMND&lt;/a&gt;: A library for easily developing Command Line Interfaces in Node.js and &lt;a href=&quot;http://github.com/keithwhor/api-res&quot;&gt;api-res&lt;/a&gt;: A wrapper around HTTP requests for easily dealing with Nodal API server requests and responses.&lt;/p&gt;
+&lt;h3&gt;&lt;a class=&quot;anchor&quot; name=&quot;thanks-and-stay-tuned&quot;&gt;&lt;/a&gt;Thanks, and Stay Tuned! &lt;a class=&quot;hash-link&quot; href=&quot;#thanks-and-stay-tuned&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;For more updates, &lt;a href=&quot;http://twitter.com/keithwhor&quot;&gt;follow me on Twitter, @keithwhor&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Also keep up to date at &lt;a href=&quot;http://nodaljs.com/&quot;&gt;nodaljs.com&lt;/a&gt; as well as &lt;a href=&quot;http://github.com/keithwhor/nodal&quot;&gt;Nodal on GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;&lt;a class=&quot;anchor&quot; name=&quot;changelog&quot;&gt;&lt;/a&gt;Changelog &lt;a class=&quot;hash-link&quot; href=&quot;#changelog&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;</description>
+				<pubDate>2016-04-06T00:00:00-07:00</pubDate>
+				<link>https://facebook.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</link>
+				<guid isPermaLink="true">https://facebook.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</guid>
+			</item>
+		
+	</channel>
+</rss>
