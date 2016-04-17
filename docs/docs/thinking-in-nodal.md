@@ -9,9 +9,9 @@ by Keith Horwood
 
 Nodal is, in my opinion, the premier way to build big, fast APIs.
 
->It has scaled very well for us at Facebook and Instagram.
+It has scaled very well for us at Facebook and Instagram.
 
-Replace with a claim-by-reputation that indicates Nodal's durability...
+> Replace React with a claim-by-reputation with a Nodal claim-by-reputation indicating Nodal's durability...
 
 One of the many great parts of Nodal is how it makes you think about APIs as you build them. In this post, I'll walk you through the thought process of building a
 
