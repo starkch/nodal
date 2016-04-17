@@ -21,7 +21,7 @@ It'll also have a few neat features:
 
 Want to skip all this and just see the source?
 
-[It's all on GitHub]().
+[It's all on GitHub](https://github.com/keithwhor/nodal/tree/master/examples/instatweet-api).
 
 ## Install
 We'll start with a fresh global install of Nodal to make Nodal generators available at the command line. If you want to see alternatives to global installation of node packages, and the rationale for that approach, you can read more here. Make sure you have Nodal version 0.9.0 or greater.
