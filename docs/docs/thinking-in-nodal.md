@@ -7,11 +7,9 @@ next: conferences.html
 
 by Keith Horwood
 
-Nodal is, in my opinion, the premier way to build big, fast APIs.
+Nodal is, in my opinion, the premier way to build scalable and maintainable APIs.
 
-It has scaled very well for us at Facebook and Instagram.
-
-> Replace React with a claim-by-reputation with a Nodal claim-by-reputation indicating Nodal's durability...
+> Add claim-by-reputation indicating Nodal's durability... backing... support... application use cases... whatever it takes to make people believe that using it isn't a mistake.
 
 One of the many great parts of Nodal is how it makes you think about APIs as you build them. In this post, I'll walk you through the thought process of building a
 
