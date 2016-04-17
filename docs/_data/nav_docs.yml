@@ -10,6 +10,8 @@
   items:
   - id: why-nodal
     title: Why Nodal?
+  - id: graphql
+    title: GraphQL    
 - title: Community Resources
   items:
   - id: videos
