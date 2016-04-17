@@ -1,0 +1,26 @@
+- title: Quick Start
+  items:
+  - id: getting-started
+    title: Getting Started
+  - id: tutorial
+    title: Tutorial
+  - id: thinking-in-nodal
+    title: Thinking in Nodal
+- title: Guides
+  items:
+  - id: why-nodal
+    title: Why Nodal?
+- title: Community Resources
+  items:
+  - id: videos
+    title: Videos
+- title: Reference
+  items:
+  - id: top-level-api
+    title: Top-Level API
+  - id: generator-api
+    title: Generator API
+  - id: database-api
+    title: Database API
+  - id: glossary
+    title: Nodal Terminology
