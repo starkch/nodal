@@ -15,9 +15,9 @@ We'll provide:
 
 It'll also have a few neat features:
 
-* *Input Validation*: API requests will be validated before responses are generated.
-* *Namespaced API*: our API will be namespaced as v1 of our instatweet-api
-* *Instant Deployment*: we'll have our API live by the end of the tutorial.
+* **Input Validation**: API requests will be validated before responses are generated.
+* **Namespaced API**: our API will be namespaced as v1 of our instatweet-api
+* **Instant Deployment**: we'll have our API live by the end of the tutorial.
 
 Want to skip all this and just see the source?
 
