@@ -19,7 +19,11 @@
   - id: sensitive-fields
     title: Sensitive Fields
   - id: stateless-architecture
-    title: Stateless Architecture     
+    title: Stateless Architecture
+  - id: tests-as-first-class-citizens
+    title: Tests As First Class Citizens
+  - id: deep-joins
+    title: Deep Joins         
 - title: Community Resources
   items:
   - id: videos
