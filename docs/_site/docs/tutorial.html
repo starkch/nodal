@@ -36,6 +36,63 @@
   <script src="/nodal/js/react-dom.js"></script>
   <script src="/nodal/js/babel-browser.min.js"></script>
   <script src="/nodal/js/live_editor.js"></script>
+  <script src="/nodal/js/browser_cuid.js"></script>
+  <script>
+    var httpRequest = new XMLHttpRequest();
+    var userEndpoint = 'http://localhost:3000/v1/users';
+
+    var userName = cuid();
+    var email = userName + '@gmail.com';
+    var password = 'password';
+
+    var userPOSTdata =
+    'username=' + userName + '&' +
+    'email=' + email + '&' +
+    'password=' + 'password';
+
+    function logContents(){
+
+      if (httpRequest.readyState === XMLHttpRequest.DONE){
+
+        if (httpRequest.status === 200) {
+          var response = JSON.parse(httpRequest.responseText);
+
+          console.log(httpRequest.responseText);
+
+        } else {
+
+          //var response = JSON.parse(httpRequest.responseText);
+          console.log('status not 200');
+          console.log(httpRequest.status);
+          console.log(httpRequest.responseText);
+
+
+        }
+
+      }
+
+    }
+
+    function makeRequest(type,url,data) {
+
+      if(httpRequest) {
+
+        httpRequest.onreadystatechange = logContents;
+
+        httpRequest.open(type, url, true);
+
+        httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        httpRequest.send(data);
+
+      }
+
+    }
+
+    makeRequest('POST',userEndpoint,userPOSTdata);
+
+  </script>
+
 </head>
 <body>
 
@@ -1150,21 +1207,21 @@ Modify: ./app/router.js
 <p>First we require our User model into tweet.js.</p>
 
 <p>Then we can use the <code>Nodal.Model.joinsTo</code> method to join our tweet model to our user model, with a specification that a User has multiple tweets</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/tweet.js{7,14}</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/tweet.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
   <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
-  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
-
+<span class="hll">  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
+</span>
   <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
 
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
 
-  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span>
-
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span>
+</span>
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
 
   <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
@@ -1347,12 +1404,13 @@ Modify: ./app/router.js
 </code></pre></div><h2><a class="anchor" name="joins-and-response-interfaces"></a>Joins and Response Interfaces <a class="hash-link" href="#joins-and-response-interfaces">#</a></h2>
 <p>You&#39;ll notice that while this query returns all the tweets belonging to the userid of the username passed to the query string, the response doesn&#39;t actually contain the user information itself.</p>
 
-<p>We can fix this easily by going to our tweets_controller and joining the user data into ourindex() method which handles GET requests to our tweets endpoint.</p>
+<p>We can fix this easily by going to our tweets_controller and joining the user data into our <code>index()</code> method which handles GET requests to our tweets endpoint.</p>
 
 <p>First we user the query composer <code>join()</code> method to join the user model into the response. Second, we also specify the interface for the response.</p>
 
-<p>Let&#39;s say in our response, we want to show the tweet id, body and created<em>at, and only show the user</em>id, username and created<em>at. Our interface for the Tweet model <code>query()</code> joined with the User model would be `[&#39;id&#39;, &#39;body&#39;,&#39;created</em>at&#39;, {user: [&#39;id&#39;, &#39;username&#39;, &#39;created_at&#39;]}]`.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<p>Let&#39;s say in our response, we want to show the tweet <code>id</code>, <code>body</code> and <code>created_at</code>, and only show the <code>user_id</code>, <code>username</code> and <code>created_at</code>. Our interface for the Tweet model <code>query()</code> joined with the User model would be </p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">user</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;created_at&#39;</span><span class="p">]}]</span>
+</code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
