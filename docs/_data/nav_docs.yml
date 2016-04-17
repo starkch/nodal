@@ -11,7 +11,11 @@
   - id: why-nodal
     title: Why Nodal?
   - id: graphql
-    title: GraphQL    
+    title: GraphQL
+  - id: conditional-joins
+    title: Conditional Joins
+  - id: strong-parameters
+    title: Strong Parameters
 - title: Community Resources
   items:
   - id: videos
