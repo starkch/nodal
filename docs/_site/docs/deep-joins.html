@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Why Nodal? | Nodal</title>
+  <title>Deep Joins | Nodal</title>
   <meta name="viewport" content="width=device-width">
-  <meta property="og:title" content="Why Nodal? | Nodal">
+  <meta property="og:title" content="Deep Joins | Nodal">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://facebook.github.io/nodal/docs/why-nodal.html">
+  <meta property="og:url" content="https://facebook.github.io/nodal/docs/deep-joins.html">
   <meta property="og:image" content="www.nodaljs.com/static/images/favicon_blue.png">
   <meta property="og:description" content="Node.js web servers optimized for building API services quickly and efficiently.">
   <meta property="fb:app_id" content="623268441017527">
@@ -97,7 +97,7 @@
       <ul>
         
           <li>
-            <a href="/nodal/docs/why-nodal.html" class="active">Why Nodal?</a>
+            <a href="/nodal/docs/why-nodal.html">Why Nodal?</a>
             
           </li>
         
@@ -132,7 +132,7 @@
           </li>
         
           <li>
-            <a href="/nodal/docs/deep-joins.html">Deep Joins</a>
+            <a href="/nodal/docs/deep-joins.html" class="active">Deep Joins</a>
             
           </li>
         
@@ -185,24 +185,77 @@
 
 
   <div class="inner-content">
-    <a class="edit-page-link" href="https://github.com/keithwhor/nodal/tree/master/docs/docs/01-why-nodal.md" target="_blank">Edit on GitHub</a>
+    <a class="edit-page-link" href="https://github.com/keithwhor/nodal/tree/master/docs/docs/08-deep-joins.md" target="_blank">Edit on GitHub</a>
     <h1>
-      Why Nodal?
+      Deep Joins
     </h1>
     <div class="subHeader"></div>
 
-    <p>Nodal is a JavaScript library for creating stateless APIs. Many people choose to think of React as the <strong>MC</strong> in <strong><a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a></strong>.</p>
+    <p>Nodal now supports <em>deep</em> (or <em>nested</em>) joins for multiply-nested Models. What this means, is given the hierarchy;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Picture</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+<span class="nx">Post</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+<span class="nx">Comment</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">Post</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+<span class="nx">Like</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">Comment</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+</code></pre></div>
+<p>That can be visualized like so;</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[User] -&gt; has multiple -&gt; [Post]
+  | has multiple            | has multiple
+  v                         v
+[Picture]                 [Comment]
+                            | has multiple
+                            v
+                          [Like]
+</code></pre></div>
+<p>You can perform something complex like;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Picture</span>
+  <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;user__posts__comments__likes&#39;</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">pictures</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-<p>We built Nodal to solve one problem: <strong>getting your data layer live online</strong>.</p>
-<h2><a class="anchor" name="simplicity-and-readability"></a>Simplicity and Readability <a class="hash-link" href="#simplicity-and-readability">#</a></h2>
-<p>Nodal&#39;s focus is on communicating with the developer and has been crafted with you and your team in mind. The simplest explanation for what’s happening is exactly what’s going on behind the scenes.</p>
-<h2><a class="anchor" name="saves-time"></a>Saves Time <a class="hash-link" href="#saves-time">#</a></h2>
-<p>Nodal uses battle-tested server-side design patterns and abstractions, an provides out of the box Postgres integration, protecting developers from decision fatigue.</p>
-<h2><a class="anchor" name="foundation-for-scalability"></a>Foundation for Scalability <a class="hash-link" href="#foundation-for-scalability">#</a></h2>
-<p>We&#39;re all about building decoupled, stateless API services. Since they&#39;re so encapsulated, Nodal APIs make testing, deployment and scaling part of your API design, rather than an afterthought.</p>
-<h2><a class="anchor" name="learn-more"></a>Learn More <a class="hash-link" href="#learn-more">#</a></h2>
-<p>You can learn more about our motivations behind building Nodal in <a href="https://restful.io/realtime-doesn-t-belong-everywhere-build-scalable-api-services-in-node-js-with-nodal-10d0adfb66d#.8i8mbikcy">this blog post</a>.</p>
+    <span class="c1">// get joined user</span>
+    <span class="nx">pictures</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">);</span>
+    <span class="c1">// get posts of joined user</span>
+    <span class="nx">pictures</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">).</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;posts&#39;</span><span class="p">);</span>
+    <span class="c1">// get comments of joined posts of joined user</span>
+    <span class="nx">pictures</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;posts&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;comments&#39;</span><span class="p">);</span>
+    <span class="c1">// it&#39;s turtles all the way down</span>
+    <span class="nx">pictures</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;posts&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;comments&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+      <span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;likes&#39;</span><span class="p">);</span>
 
+    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">pictures</span><span class="p">);</span>
+
+  <span class="p">});</span>
+</code></pre></div>
+<p>And if you choose to output an API response;</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{
+  meta: {...},
+  data: [
+    {
+      user: {
+        posts: [
+          {
+            comments: [
+              {
+                likes: [...]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+</code></pre></div>
+<p>So;</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// get 1st picture, user from pic, 2nd post from user,</span>
+<span class="c1">//   4th comment from post</span>
+<span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">user</span><span class="p">.</span><span class="nx">posts</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">comments</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</code></pre></div>
 
     <div class="docs-prevnext">
       
