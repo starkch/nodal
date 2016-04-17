@@ -1157,8 +1157,8 @@ First we require our User model into tweet.js.
 
 Then we can use the `Nodal.Model.joinsTo` method to join our tweet model to our user model, with a specification that a User has multiple tweets
 
-```js
-// ./app/models/tweet.js{7,14}
+```javascript{7,14}
+// ./app/models/tweet.js
 module.exports = (function() {
 
   'use strict';
@@ -1381,11 +1381,15 @@ Should give us:
 
 You'll notice that while this query returns all the tweets belonging to the userid of the username passed to the query string, the response doesn't actually contain the user information itself.
 
-We can fix this easily by going to our tweets_controller and joining the user data into ourindex() method which handles GET requests to our tweets endpoint.
+We can fix this easily by going to our tweets_controller and joining the user data into our `index()` method which handles GET requests to our tweets endpoint.
 
 First we user the query composer `join()` method to join the user model into the response. Second, we also specify the interface for the response.
 
-Let's say in our response, we want to show the tweet id, body and created_at, and only show the user_id, username and created_at. Our interface for the Tweet model `query()` joined with the User model would be `['id', 'body','created_at', {user: ['id', 'username', 'created_at']}]`.
+Let's say in our response, we want to show the tweet `id`, `body` and `created_at`, and only show the `user_id`, `username` and `created_at`. Our interface for the Tweet model `query()` joined with the User model would be 
+
+```javascript
+['id', 'body','created_at', {user: ['id', 'username', 'created_at']}]
+```
 
 ```javascript{18}
 // ./app/controllers/v1/tweets_controller.js
