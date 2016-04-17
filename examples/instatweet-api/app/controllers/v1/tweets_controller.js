@@ -36,7 +36,7 @@ module.exports = (function() {
 
       this.authorize((accessToken, user) => {
 
-        //this.params.body.user_id = user.get('id');
+        this.params.body.user_id = user.get('id');
 
         Tweet.create(this.params.body, (err, model) => {
 
