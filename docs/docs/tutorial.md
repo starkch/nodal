@@ -183,9 +183,9 @@ For our purposes, what we need to know is that our Nodal generated a file, with 
 ./db/migrations/2016040820210712__create_tweet.js
 ```
 
-If we look at this file, we'll see that it follows the same pattern as the index controller we looked at first: uses an IIFE to wrap the module, imports dependencies explicitly, emulates classical inheritance by extending a Nodal class, and implements methods relevant to the concerns of the module. In this case we're extending the Nodal.Migrations class. The constructor method is an implementation detail. The two methods to focus on here are the up() and down() methods.
+If we look at this file, we'll see that it follows the same pattern as the index controller we looked at first: uses an IIFE to wrap the module, imports dependencies explicitly, emulates classical inheritance by extending a Nodal class, and implements methods relevant to the concerns of the module. In this case we're extending the Nodal.Migrations class. The constructor method is an implementation detail. The two methods to focus on here are the `up()` and `down()` methods.
 
-```javascript
+```javascript{15-21,23-29}
 // ./db/migrations/UTCTimestamp__create_tweet.js
 module.exports = (function() {
 
@@ -223,16 +223,17 @@ module.exports = (function() {
 })();
 ```
 
-The up method will create a new tweets table using the schema we defined in the command line. The down method will drop that table.
+`up()` will create a new tweets table using the schema we defined in the command line. `down()` will drop that table.
 
 In this way we can roll our database forward, or backward if needed, as we develop our API.
+
 Each time we use the generator to create a new model, we'll create a new migrations file that contains up and down migrations representing the new tables needed to match our models, and an operation that will drop those new tables and return us to a previous version of our database.
 
 ## Our First Model
 
-Our command line generator created `./app/models/tweet.js` for us as well. Our model follows the same ES6 classical inheritance emulation pattern, extending our Tweet model from `Nodal.Model`. Our Tweet model sets our db database using a generated config from our db directory. Then it sets the schema for our Tweet using an internal description of our tweet model schema.
+Our command line generator created `./app/models/tweet.js` for us as well. Our model follows the same ES6 classical inheritance emulation pattern, extending our Tweet model from `Nodal.Model`. Our Tweet model sets our database using a generated config from our db directory. Then it sets the schema for our Tweet using an internal description of our tweet model schema.
 
-```javascript
+```javascript{9,11-12}
 //app/models/tweet.js
 
 module.exports = (function() {
@@ -284,6 +285,7 @@ To run our migration we use:
 ```
 $ nodal db: migrate
 ```
+
 This creates the tables in our database.
 
 To rollback a migration, we use:
@@ -291,6 +293,7 @@ To rollback a migration, we use:
 ```
 $ nodal db:rollback
 ```
+
 This roll's our database back to a prior migration
 
 Migrating will roll our database forward again:
@@ -298,6 +301,7 @@ Migrating will roll our database forward again:
 ```
 $ nodal db:migrate
 ```
+
 Every migration or rollback will print the schema of the current migration to the console for us, so we can keep track of what our database looks like at any moment.
 
 Additionally, running `db:migrate` when a new migration doesn't exist will return a message saying "no pending migrations exist". Running db:rollback without having completed any migrations in the first place will throw an error. You can see the guide for migrations and rollbacks for more detail.
@@ -395,11 +399,11 @@ class V1TweetsController extends Nodal.Controller {
 
 Let's see if we can hit this endpoint.
 
-Using Postman, or curl, or whatever your favorite way to test an API endpoint, lets hit localhost:3000/v1/tweets with a GET request.
+Using Postman, or curl, or whatever your favorite way to test an API endpoint, lets hit `localhost:3000/v1/tweets` with a GET request.
 
 Our response should look like this:
 
-```
+```json
 {
   "meta": {
       "total":0,
@@ -424,7 +428,7 @@ Modify: ./app/router.js
 
 There are a couple things going on the router that aren't pertinent to this tutorial. You can check out the guides to middleware and renderware if you're curious. Highlighting the bits to focus on, we can see that we have a route for every controller in our API, like our index controller from the start of the tutorial. When Nodal generates a controller, it explicitly required that controller into the router and generates a route for that controller as well:
 
-```javascript
+```javascript{19-23,27-31}
 // ./app/router.js
 module.exports = (function() {
 
@@ -482,7 +486,7 @@ We'll assume you have a favorite way to test your API end points, and leave the 
 
 The `/v1/tweets` endpoint handles our POST request and responds with the data we sent in our POST request, which matches our definition of our tweet model. It also responds with an updated response metadata. All Nodal API responses adhere to this format.
 
-```
+```json
  {
   "meta": {
     "count": 1,
@@ -493,7 +497,7 @@ The `/v1/tweets` endpoint handles our POST request and responds with the data we
     {
       "id": 1,
       "user_id": null,
-      "body": Hey,
+      "body": "Hey",
       "created_at": "2016-04-08T08:46:18.069Z"
     }
   ]
@@ -527,7 +531,7 @@ After every request we should see a response of the same format as:
     {
       "id": 6,
       "user_id": null,
-      "body": Hello, friend!,
+      "body": "Hello, friend!",
       "created_at": "2016-04-08T08:47:12.063Z"
     }
   ]
@@ -548,7 +552,7 @@ One of the features we want to implement with our instatweet-API is input valida
 
 Let's validate the body of our POST request to make sure that it both exists and is longer than 5 characters.
 
-```js
+```javascript{13}
 // ./app/models/tweet.js
 module.exports = (function() {
 
@@ -625,7 +629,7 @@ localhost:3000/v1/tweets?body__not_null
 localhost:3000/v1/tweets?body__startswith=he
 ```
 
-body__startswith=he doesn't work because the query is case sensitive.
+`body__startswith=he` doesn't work because the query is case sensitive.
 
 ```
 localhost:3000/v1/tweets?body__startswith=He
@@ -633,7 +637,7 @@ localhost:3000/v1/tweets?body__startswith=He
 localhost:3000/v1/tweets?body__endswith=friend!
 ```
 
-For case insensitive we use iendswith:
+For case insensitive we use `iendswith`:
 
 ```
 localhost:3000/v1/tweets?body__iendswith=frieNd!
@@ -655,9 +659,9 @@ localhost:3000/v1/tweets?id__gte=3&__offset=2&__count=2
 
 How's this all working? Is this magic, or does the developer have fine grained control over responding to query strings?
 
-If we look in our tweets_controller.js file, what we see is the chain of methods invoked on the query params
+If we look in our `tweets_controller.js` file, what we see is the chain of methods invoked on the query params
 
-```js
+```javascript{6}
 // ./app/controllers/v1/tweets_controller.js
 
 class V1TweetsController extends Nodal.Controller {
@@ -677,7 +681,7 @@ We can actually specify conditions for the response directly as an option hash o
 
 We can replace this.params.query with something like `{id__gte: 3}`:
 
-```js
+```javascript{6}
 // ./app/controllers/v1/tweets_controller.js
 
 index() {
@@ -771,7 +775,7 @@ Create: ./app/models/user.js
 Create: ./db/migrations/2016041500085963__create_user.js
 ```
 
-> NOTE: If you run into problems remember that Nodal generators will log the changes made to your server. If, for example, you need to generate your user model again, you can remove the files that Nodal generated, and rerun generator commands from the command line. For example, if nodal g:model --user throws an error because installation of bcrypt required super user privileges, you can remove the generated files and then run sudo nodal g:model --user. Nodal generators are explicit, transparent and modular so that the developer can maintain fine grain control of their server.
+> NOTE: If you run into problems with Nodal generators, remember that Nodal generators will log the changes made to your server. If, for example, you need to generate your user model again, you can remove the files that Nodal generated, and rerun generator commands from the command line. For example, if `$ nodal g:model --user` throws an error because installation of bcrypt required super user privileges, you can remove the generated files and then run `$ sudo nodal g:model --user`. Nodal generators are explicit, transparent and modular so that the developer can maintain fine grain control of their server.
 
 As in our tweet model, Nodal generates a new migration in our `db/migrations` directory, which –upon migration– creates a users table with three fields.
 
@@ -783,7 +787,7 @@ As in our tweet model, Nodal generates a new migration in our `db/migrations` di
 
 Additionally, if you inspect the generated migration code, you'll see an example of setting properties on a data field in a Postgres table, and specifically that the email field must be unique.
 
-```js
+```js{18}
 //db/migrations/UTCTimestamp__create_user.js
 module.exports = (function() {
 
@@ -823,7 +827,7 @@ module.exports = (function() {
 
 The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a `beforeSave()` method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point:
 
-```js
+```javascript
 // ./app/models/user.js
 module.exports = (function() {
 
@@ -882,13 +886,15 @@ One step at a time that's:
 
 Requires the bcrypt package
 
-```js
+```javascript
 // ./app/models/user.js
 
 const bcrypt = require('bcrypt');
+```
 
-Implements a beforeSave() method. This method is invoked before data is saved to the database.
+Implements a `beforeSave()` method. This method is invoked before data is saved to the database.
 
+```
 beforeSave(callback) {
 
   if (!this.hasErrors() && this.hasChanged('password')) {
@@ -915,7 +921,7 @@ beforeSave(callback) {
 
 Implements password verification
 
-```js
+```javascript
 // ./app/models/user.js
 verifyPassword(unencrypted, callback) {
 
@@ -1101,7 +1107,7 @@ Let's fix the response interface so that we don't send the hashed password field
 
 Our `users_controller.js` file is where we specify the response data to API requests. We can specify an interface to describe those responses. We can edit any of our responses by adding an array specifying what model data we want to send in our response. In this case we'll add `['id','username','email','created_at']` as an argument to `this.respond()` on our index method in our `users_controller.js` file, which corresponds to a GET request to `/v1/users/` endpoint.
 
-```js
+```javascript{8}
 // ./app/controllers/v1/users_controller.js
 index() {
 
@@ -1147,10 +1153,12 @@ All of our tweets have a `user_id` associated with them. We can use that `user_i
 
 Not only that, we can do this right in our tweet model!
 
-We'll break this down step by step, but this is what our tweets model will look like when we're done associating tweets and users:
+First we require our User model into tweet.js.
+
+Then we can use the `Nodal.Model.joinsTo` method to join our tweet model to our user model, with a specification that a User has multiple tweets
 
 ```js
-// ./app/models/tweet.js
+// ./app/models/tweet.js{7,14}
 module.exports = (function() {
 
   'use strict';
@@ -1172,19 +1180,7 @@ module.exports = (function() {
 })();
 ```
 
-First we require our User model into tweet.js
-
-```js
-const User = Nodal.require('app/models/user.js');
-```
-
-Then we can use the Nodal.Model.joinsTo method to join our tweet model to our user model, with a specification that a User has multiple tweets
-
-```js
-Tweet.joinsTo(User, {multiple:true});
-```
-
-This is a combination of two associations from Rails: has_many and belongs_to. Additionally Nodal is strict about being "bottom up" with joins. Because Nodal is explicit about dependencies, we need to avoid cyclical joins; Nodal won't magically resolve them for you. Therefor the parent ID should always be in a child table, and never the other way around. Tweets belong to Users. Users are the parents, tweets are their children.
+`joinsTo` and `{multiple:true}` is a combination of two associations from Rails: `has_many` and `belongs_to`. Additionally Nodal is strict about being "bottom up" with joins. Because Nodal is explicit about dependencies, we need to avoid cyclical joins; Nodal won't magically resolve them for you. Therefor the parent ID should always be in a child table, and never the other way around. Tweets belong to Users. Users are the parents, tweets are their children.
 
 Therefor we always go to the child model, require the parent, and `doChild.joinsTo(Parent, {multiple:true})`
 
@@ -1391,7 +1387,7 @@ First we user the query composer `join()` method to join the user model into the
 
 Let's say in our response, we want to show the tweet id, body and created_at, and only show the user_id, username and created_at. Our interface for the Tweet model `query()` joined with the User model would be `['id', 'body','created_at', {user: ['id', 'username', 'created_at']}]`.
 
-```
+```javascript{18}
 // ./app/controllers/v1/tweets_controller.js
 module.exports = (function() {
 
@@ -1488,11 +1484,11 @@ Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 
 Our `./app/models/access_token.js` file has a lot going on. As always, we're equipped to interpret what Nodal has generated. Much if it should begin to look familiar.
 
-Access tokens rely on verification of a user. If we look in `./app/models/access_token.js` we'll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicity– for generating access tokens.
+Access tokens rely on verification of a user. If we look in `./app/models/access_token.js` we'll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.
 
-The static method generateAccessTokenString() uses crypto to generate an access token string.
+The static method `generateAccessTokenString()` uses crypto to generate an access token string.
 
-```js
+```javascript
 // ./app/models/access_token.js
 module.exports = (function() {
 
@@ -1639,7 +1635,7 @@ So lets go to `./app/controllers/v1/access_tokens_controller.js` and erase all t
 
 First we need a method for creating an access token. To do this we use the login() method on the AccessToken model, inside of the access token controller's create() method. The login method takes two arguments, the first is the params passed to the request, and the second is the callback, which we'll use to generates the response on login.
 
-```js
+```javascript{11-17}
 // ./app/controllers/v1/access_tokens_controller.js
 module.exports = (function() {
 
@@ -1683,7 +1679,7 @@ We get a 501 - Not Implemented
 }
 ```
 
-This makes sense! Our access_tokens controller doesn't have a defined index() or show()method. We erased them both! And we've only implemented a create() method, which corresponds to handling a POST request.
+This makes sense! Our access_tokens controller doesn't have a defined `index()` or `show()` method. We erased them both! And we've only implemented a create() method, which corresponds to handling a POST request.
 
 So now let's do a POST to `/v1/access_tokens`.
 
@@ -1705,7 +1701,7 @@ And we get a response! In the response we see an error message "Must supply gran
 
 If we go into `app/models/access_token.js` and look at the login method
 
-```js
+```javascript{7}
 //app/models/access_token.js
 
 static login(params, callback){
@@ -1723,7 +1719,7 @@ static login(params, callback){
 
 we see the exact error that we just received in our response!
 
-A `grant_type` is part of the OAuth spec, and you can read a useful blog post about grant_types [here]().
+A `grant_type` is part of the OAuth spec, and you can read a useful blog post about grant_types [here](http://alexbilbie.com/2013/02/a-guide-to-oauth-2-grants/).
 
 Let's add a `grant_type = password` to our POST request
 
@@ -1745,7 +1741,7 @@ Now the response to our POST request gives us a "User not found" error! So our `
 
 Let's go look at what else is happening in our access token model. After our `grant_type` check we have our query composer method chain!
 
-```js
+```javascript
 //app/models/access_token.js
 
 ...
@@ -1764,7 +1760,7 @@ User.query()
 
    })
 
-So lets supply a username = keithwhor in our POST request!
+So lets supply a `username = keithwhor` in our POST request!
 
 And now we get an "Invalid credentials" error message!
 
@@ -1783,7 +1779,7 @@ And now we get an "Invalid credentials" error message!
 
 Great! We know where that's probably coming from!
 
-```
+```javascript{15}
 //app/models/access_token.js
 
 User.query()
@@ -1807,7 +1803,7 @@ User.query()
 
 Sure enough there's our 'Invalid credentials' error.
 
-So let's provide some credentials! Specifically, lets provide password = password in our POST request.
+So let's provide some credentials! Specifically, lets provide `password = password` in our POST request.
 
 ```json
 {
@@ -1866,9 +1862,9 @@ class V1TweetsController extends Nodal.Controller {
 }
 ```
 
-We can replace the default Nodal.Controller with an AuthController by requiring `./app/controllers/auth_controller.js` into our `tweets_controller` and then replacing `Nodal.Controller` with `AuthController`.
+We can replace the default `Nodal.Controller` with an `AuthController` by requiring `./app/controllers/auth_controller.js` into our `tweets_controller` and then replacing `Nodal.Controller` with `AuthController`.
 
-```js
+```javascript{2,4}
 //app/controllers/tweets_controller.js
 const AuthController = Nodal.require('app/controllers/auth_controller.js');
 
@@ -1883,7 +1879,7 @@ class V1TweetsController extends AuthController {
 
 The `AuthController` itself also extends the `Nodal.Controller`, including all the methods we've been using for our basic API end points, but provides an additional `authorize()` method.
 
-```js
+```javascript{10-17}
 // ./app/controllers/auth_controller.js
 module.exports = (function() {
 
@@ -1911,11 +1907,11 @@ module.exports = (function() {
 
 Now we can go into the `create()` method of our Tweet controller, and use the `authorize()` method from the AuthController! And we can wrap our tweet creation logic in a callback that gets passed to authorize!
 
-Specifically, we'll pass an anonymous function as the callback to this.authorize(). That callback will be provided error object, an access token and our user. You can check the function signature of our `AuthoController` `authorize()` method to see that the callback it takes as an argument is up to us to define. We'll use `authorize()` to `verify()` the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model's `create()` method to create a tweet.
+Specifically, we'll pass an anonymous function as the callback to `this.authorize()`. That callback will be provided error object, an access token and our user. You can check the function signature of our `AuthoController` `authorize()` method to see that the callback it takes as an argument is up to us to define. We'll use `authorize()` to `verify()` the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model's `create()` method to create a tweet.
 
 That create methods looks like this:
 
-```js
+```javascript{17-35}
 // ./app/controllers/v1/tweets_controller.js
 module.exports = (function() {
 
@@ -1969,7 +1965,7 @@ Step 1 is to require our AccessToken model, so that we're able to verify that th
 
 Step 2 is to use the `.verify()` method on our AccessToken model, and pass it the username and access token string, which it can use to check against the usernames and granted access tokens in the database. We also pass our callback to `.verify()`. You can go look at the function signature of the access token model's `.verify()` method to see what it does with our params and our callback. After these changes, our new AuthController will look like this:
 
-```js
+```js{7,16}
 //app/controllers/auth_controller.js
 module.exports = (function() {
 
@@ -2010,6 +2006,7 @@ Now let's hit our tweets endpoint again with a POST request! There's one more th
   },
   "data": []
 }
+```
 
 We get an error message telling us that we're missing our access token!
 
@@ -2021,7 +2018,7 @@ localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
 
 And it posted! But the new user is still null!
 
-``json
+```json
 {
   "meta": {
     "total": 1,
@@ -2043,9 +2040,7 @@ And it posted! But the new user is still null!
 
 Let's quick fix that in our controller's create method, by adding this line:
 
-> tutorial breaks down here because user is undefined
-
-```js
+```javascript
 // ./app/controllers/v1/tweets_controller.js
 create() {
 
@@ -2057,7 +2052,7 @@ create() {
 
     }
 
->    this.params.body.user_id = user.get('id');
+    this.params.body.user_id = user.get('id');
 
     Tweet.create(this.params.body, (err, model) => {
 
@@ -2076,7 +2071,7 @@ And we're there! A post to:
 localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
 ```
 
-Gets a response with the user_id corresponding to the access token:
+Gets a response with the `user_id` corresponding to the access token:
 
 ```json
 {
@@ -2144,7 +2139,7 @@ Let do a quick refactor that will highlight some useful pieces of how Nodal is w
 
 We can actually refactor the error logic in our `tweets_controller.js` `create()` method, by removing it from the callback that we pass to `authorize()`:
 
-```js
+```javascript{6-10}
 //app/controllers/v1/tweets_controller.js
 create() {
 
@@ -2171,7 +2166,7 @@ create() {
 
 We can then add it to the callback function passed to our `AccessToken.verify()` method invoked in the authorize method in our `auth_controller.js` file.
 
-```js
+```javascript{4-8}
 //app/controllers/auth_controller.js
 authorize(callback) {
 
@@ -2193,7 +2188,7 @@ At this point, any call to `authorize()` will respond with an error –if there 
 
 Or we can go further and move this error logic into our `AccessToken.verify()` callback:
 
-```js
+```javascript{11-15}
 // ./app/controllers/auth_controller.js
 class AuthController extends Nodal.Controller {
 
@@ -2220,9 +2215,9 @@ class AuthController extends Nodal.Controller {
 
 And this way any call to `AccessToken.verify()` will respond to an error –if there is an error– no matter where or when it's invoked.
 
-With this refactor, we can actually remove the err all together from both the callback passed to authorize() and from the callback invoked on successful authorization.
+With this refactor, we can actually remove the err all together from both the callback passed to `authorize()` and from the callback invoked on successful authorization.
 
-```js
+```javascript{4}
 // ./app/controllers/v1/tweets_controller.js
 create() {
 
@@ -2241,8 +2236,7 @@ create() {
 }
 ```
 
-```js
-
+```javascript{17}
 // ./app/controllers/auth_controller.js
 class AuthController extends Nodal.Controller {
 
@@ -2271,7 +2265,7 @@ We can test any of these refactors by sending a POST with a valid token, and the
 
 ## Destroying Access Tokens
 
-The easiest way is just to send a DELETE request, to the /v1/access_tokens endpoint, providing the access token you want to delete as a query string argument.
+The easiest way is just to send a DELETE request, to the `/v1/access_tokens` endpoint, providing the access token you want to delete as a query string argument.
 
 ```
 localhost:3000/v1/access_tokens/76ab6fca89b74d9d7333feb4ed799a88
@@ -2285,7 +2279,7 @@ That error means we haven't implemented a `destroy()` method in our `access_toke
 
 So let's implement a `destroy()` method that adheres to the same approach as our `create()` method. We'll use the logout method implemented by our AccessToken model
 
-```js
+```javascript{14-22}
 //app/v1/access_tokens_controller.js
 class V1AccessTokensController extends Nodal.Controller {
 
@@ -2345,9 +2339,9 @@ localhost:3000/v1/access_tokens/1/?access_token=76ab6fca89b74d9d7333feb4ed799a88
 }
 ```
 
-Ideally we would want to omit the id in the path. Generally, Nodal tends to be transparent and consistent with it's behavior. If we look in router.js we see that the Nodal access token generator has added a route that includes the id:
+Ideally we would want to omit the id in the path. Generally, Nodal tends to be transparent and consistent with it's behavior. If we look in `router.js` we see that the Nodal access token generator has added a route that includes the id:
 
-```js
+```javascript
 // ./app/router.js
 /* generator: begin routes */
 
@@ -2366,7 +2360,7 @@ We can go check our server log in our terminal window to see what was actually r
 DELETE FROM "access_tokens" WHERE ("id") = ($1) RETURNING *
 ```
 
-We can verify that our access token is no longer valid by sending a post request to our /v1/tweets endpoint passing our now-deleted access token as a query string:
+We can verify that our access token is no longer valid by sending a post request to our `/v1/tweets` endpoint passing our now-deleted access token as a query string:
 
 ```
 localhost:3000/v1/tweets?access_token=76ab6fca89b74d9d7333feb4ed799a88

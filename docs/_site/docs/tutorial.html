@@ -360,7 +360,7 @@ Migrations offer a consistent and convenient way to alter your database schema o
 <p>For our purposes, what we need to know is that our Nodal generated a file, with a timestamp, in our server&#39;s db/migrations directory.</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">./db/migrations/2016040820210712__create_tweet.js
 </code></pre></div>
-<p>If we look at this file, we&#39;ll see that it follows the same pattern as the index controller we looked at first: uses an IIFE to wrap the module, imports dependencies explicitly, emulates classical inheritance by extending a Nodal class, and implements methods relevant to the concerns of the module. In this case we&#39;re extending the Nodal.Migrations class. The constructor method is an implementation detail. The two methods to focus on here are the up() and down() methods.</p>
+<p>If we look at this file, we&#39;ll see that it follows the same pattern as the index controller we looked at first: uses an IIFE to wrap the module, imports dependencies explicitly, emulates classical inheritance by extending a Nodal class, and implements methods relevant to the concerns of the module. In this case we&#39;re extending the Nodal.Migrations class. The constructor method is an implementation detail. The two methods to focus on here are the <code>up()</code> and <code>down()</code> methods.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./db/migrations/UTCTimestamp__create_tweet.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
@@ -375,34 +375,35 @@ Migrations offer a consistent and convenient way to alter your database schema o
       <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="mi">2016041420441120</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="nx">up</span><span class="p">()</span> <span class="p">{</span>
-
-      <span class="k">return</span> <span class="p">[</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;int&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
-      <span class="p">];</span>
-
-    <span class="p">}</span>
-
-    <span class="nx">down</span><span class="p">()</span> <span class="p">{</span>
-
-      <span class="k">return</span> <span class="p">[</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">dropTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">)</span>
-      <span class="p">];</span>
-
-    <span class="p">}</span>
-
+<span class="hll">    <span class="nx">up</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="p">[</span>
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;int&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
+</span><span class="hll">      <span class="p">];</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+<span class="hll">    <span class="nx">down</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="p">[</span>
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">dropTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">)</span>
+</span><span class="hll">      <span class="p">];</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="nx">CreateTweet</span><span class="p">;</span>
 
 <span class="p">})();</span>
 </code></pre></div>
-<p>The up method will create a new tweets table using the schema we defined in the command line. The down method will drop that table.</p>
+<p><code>up()</code> will create a new tweets table using the schema we defined in the command line. <code>down()</code> will drop that table.</p>
 
-<p>In this way we can roll our database forward, or backward if needed, as we develop our API.
-Each time we use the generator to create a new model, we&#39;ll create a new migrations file that contains up and down migrations representing the new tables needed to match our models, and an operation that will drop those new tables and return us to a previous version of our database.</p>
+<p>In this way we can roll our database forward, or backward if needed, as we develop our API.</p>
+
+<p>Each time we use the generator to create a new model, we&#39;ll create a new migrations file that contains up and down migrations representing the new tables needed to match our models, and an operation that will drop those new tables and return us to a previous version of our database.</p>
 <h2><a class="anchor" name="our-first-model"></a>Our First Model <a class="hash-link" href="#our-first-model">#</a></h2>
-<p>Our command line generator created <code>./app/models/tweet.js</code> for us as well. Our model follows the same ES6 classical inheritance emulation pattern, extending our Tweet model from <code>Nodal.Model</code>. Our Tweet model sets our db database using a generated config from our db directory. Then it sets the schema for our Tweet using an internal description of our tweet model schema.</p>
+<p>Our command line generator created <code>./app/models/tweet.js</code> for us as well. Our model follows the same ES6 classical inheritance emulation pattern, extending our Tweet model from <code>Nodal.Model</code>. Our Tweet model sets our database using a generated config from our db directory. Then it sets the schema for our Tweet using an internal description of our tweet model schema.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/tweet.js</span>
 
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -411,11 +412,11 @@ Each time we use the generator to create a new model, we&#39;ll create a new mig
 
   <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
 
-  <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
-
-  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
-  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
-
+<span class="hll">  <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
+</span>
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
+</span>
   <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
 
 <span class="p">})();</span>
@@ -534,18 +535,18 @@ Modify: ./app/router.js
 </code></pre></div>
 <p>Let&#39;s see if we can hit this endpoint.</p>
 
-<p>Using Postman, or curl, or whatever your favorite way to test an API endpoint, lets hit localhost:3000/v1/tweets with a GET request.</p>
+<p>Using Postman, or curl, or whatever your favorite way to test an API endpoint, lets hit <code>localhost:3000/v1/tweets</code> with a GET request.</p>
 
 <p>Our response should look like this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">{
-  &quot;meta&quot;: {
-      &quot;total&quot;:0,
-      &quot;count&quot;:0,
-      &quot;offset&quot;: 0,
-      &quot;error&quot;: null
-    },
-  &quot;data&quot;: []
-}
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+    <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
 </code></pre></div><h2><a class="anchor" name="router"></a>Router <a class="hash-link" href="#router">#</a></h2>
 <p>What was actually happening when we hit that tweets endpoint?</p>
 
@@ -572,20 +573,20 @@ Modify: ./app/router.js
 
   <span class="kr">const</span> <span class="nx">IndexController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/index_controller.js&#39;</span><span class="p">);</span>
 
-  <span class="cm">/* generator: begin imports */</span>
-
-  <span class="kr">const</span> <span class="nx">V1TweetsController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/v1/tweets_controller.js&#39;</span><span class="p">);</span>
-
-  <span class="cm">/* generator: end imports */</span>
-
+<span class="hll">  <span class="cm">/* generator: begin imports */</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="kr">const</span> <span class="nx">V1TweetsController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/v1/tweets_controller.js&#39;</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="cm">/* generator: end imports */</span>
+</span>
   <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">IndexController</span><span class="p">);</span>
 
-  <span class="cm">/* generator: begin routes */</span>
-
-  <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/tweets/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1TweetsController</span><span class="p">);</span>
-
-  <span class="cm">/* generator: end routes */</span>
-
+<span class="hll">  <span class="cm">/* generator: begin routes */</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/tweets/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1TweetsController</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="cm">/* generator: end routes */</span>
+</span>
   <span class="k">return</span> <span class="nx">router</span><span class="p">;</span>
 
 <span class="p">})();</span>
@@ -604,21 +605,21 @@ Or if you want to use curl from the command line:</p>
 <p>We&#39;ll assume you have a favorite way to test your API end points, and leave the choice of how to hit your API up to you.</p>
 
 <p>The <code>/v1/tweets</code> endpoint handles our POST request and responds with the data we sent in our POST request, which matches our definition of our tweet model. It also responds with an updated response metadata. All Nodal API responses adhere to this format.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"> {
-  &quot;meta&quot;: {
-    &quot;count&quot;: 1,
-    &quot;offset&quot;: 0,
-    &quot;error&quot;: null
-  },
-  &quot;data&quot;: [
-    {
-      &quot;id&quot;: 1,
-      &quot;user_id&quot;: null,
-      &quot;body&quot;: Hey,
-      &quot;created_at&quot;: &quot;2016-04-08T08:46:18.069Z&quot;
-    }
-  ]
-}
+<div class="highlight"><pre><code class="language-json" data-lang="json"> <span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:46:18.069Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
 </code></pre></div><h2><a class="anchor" name="creating-tweets-with-actual-content"></a>Creating tweets with actual content <a class="hash-link" href="#creating-tweets-with-actual-content">#</a></h2>
 <p>Let&#39;s keep on hitting the API with POST requests containing some other text in the body:</p>
 
@@ -643,7 +644,7 @@ Or if you want to use curl from the command line:</p>
     <span class="p">{</span>
       <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
       <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="err">Hello</span><span class="p">,</span> <span class="err">friend!,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, friend!&quot;</span><span class="p">,</span>
       <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:47:12.063Z&quot;</span>
     <span class="p">}</span>
   <span class="p">]</span>
@@ -660,7 +661,7 @@ Or if you want to use curl from the command line:</p>
 </ul>
 
 <p>Let&#39;s validate the body of our POST request to make sure that it both exists and is longer than 5 characters.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/tweet.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/tweet.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -672,8 +673,8 @@ Or if you want to use curl from the command line:</p>
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
 
-  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
-
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
+</span>
   <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
 
 <span class="p">})();</span>
@@ -724,12 +725,12 @@ Or if you want to use curl from the command line:</p>
 
 localhost:3000/v1/tweets?body__startswith=he
 </code></pre></div>
-<p>body__startswith=he doesn&#39;t work because the query is case sensitive.</p>
+<p><code>body__startswith=he</code> doesn&#39;t work because the query is case sensitive.</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?body__startswith=He
 
 localhost:3000/v1/tweets?body__endswith=friend!
 </code></pre></div>
-<p>For case insensitive we use iendswith:</p>
+<p>For case insensitive we use <code>iendswith</code>:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?body__iendswith=frieNd!
 </code></pre></div>
 <p>For integer values, we can do greater-than-or-equal-to queries</p>
@@ -742,14 +743,14 @@ localhost:3000/v1/tweets?id__gte=3&amp;__offset=2&amp;__count=2
 </code></pre></div>
 <p>How&#39;s this all working? Is this magic, or does the developer have fine grained control over responding to query strings?</p>
 
-<p>If we look in our tweets_controller.js file, what we see is the chain of methods invoked on the query params</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<p>If we look in our <code>tweets_controller.js</code> file, what we see is the chain of methods invoked on the query params</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 
 <span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
   <span class="nx">index</span><span class="p">(){</span>
     <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-       <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
-       <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="hll">       <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+</span>       <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
           <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">);</span>
 
@@ -760,13 +761,13 @@ localhost:3000/v1/tweets?id__gte=3&amp;__offset=2&amp;__count=2
 <p>We can actually specify conditions for the response directly as an option hash of properties passed to <code>.where()</code>:</p>
 
 <p>We can replace this.params.query with something like <code>{id__gte: 3}</code>:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 
 <span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
-  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">id__gte</span><span class="o">:</span> <span class="mi">3</span><span class="p">})</span>
-  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<span class="hll">  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">id__gte</span><span class="o">:</span> <span class="mi">3</span><span class="p">})</span>
+</span>  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
     <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">);</span>
   <span class="p">});</span>
@@ -828,7 +829,7 @@ localhost:3000/v1/tweets?id__gte=3&amp;__offset=2&amp;__count=2
 Create: ./db/migrations/2016041500085963__create_user.js
 </code></pre></div>
 <blockquote>
-<p>NOTE: If you run into problems remember that Nodal generators will log the changes made to your server. If, for example, you need to generate your user model again, you can remove the files that Nodal generated, and rerun generator commands from the command line. For example, if nodal g:model --user throws an error because installation of bcrypt required super user privileges, you can remove the generated files and then run sudo nodal g:model --user. Nodal generators are explicit, transparent and modular so that the developer can maintain fine grain control of their server.</p>
+<p>NOTE: If you run into problems with Nodal generators, remember that Nodal generators will log the changes made to your server. If, for example, you need to generate your user model again, you can remove the files that Nodal generated, and rerun generator commands from the command line. For example, if <code>$ nodal g:model --user</code> throws an error because installation of bcrypt required super user privileges, you can remove the generated files and then run <code>$ sudo nodal g:model --user</code>. Nodal generators are explicit, transparent and modular so that the developer can maintain fine grain control of their server.</p>
 </blockquote>
 
 <p>As in our tweet model, Nodal generates a new migration in our <code>db/migrations</code> directory, which –upon migration– creates a users table with three fields.</p>
@@ -857,8 +858,8 @@ Create: ./db/migrations/2016041500085963__create_user.js
     <span class="nx">up</span><span class="p">()</span> <span class="p">{</span>
 
       <span class="k">return</span> <span class="p">[</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="s2">&quot;properties&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;unique&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;password&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;username&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
-      <span class="p">];</span>
+<span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="s2">&quot;properties&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;unique&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;password&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;username&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
+</span>      <span class="p">];</span>
 
     <span class="p">}</span>
 
@@ -877,7 +878,7 @@ Create: ./db/migrations/2016041500085963__create_user.js
 <span class="p">})();</span>
 </code></pre></div>
 <p>The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a <code>beforeSave()</code> method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/user.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -933,37 +934,36 @@ Create: ./db/migrations/2016041500085963__create_user.js
 <p>One step at a time that&#39;s:</p>
 
 <p>Requires the bcrypt package</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/user.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
 
 <span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
+</code></pre></div>
+<p>Implements a <code>beforeSave()</code> method. This method is invoked before data is saved to the database.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">beforeSave(callback) {
 
-<span class="nx">Implements</span> <span class="nx">a</span> <span class="nx">beforeSave</span><span class="p">()</span> <span class="nx">method</span><span class="p">.</span> <span class="nx">This</span> <span class="nx">method</span> <span class="nx">is</span> <span class="nx">invoked</span> <span class="nx">before</span> <span class="nx">data</span> <span class="nx">is</span> <span class="nx">saved</span> <span class="nx">to</span> <span class="nx">the</span> <span class="nx">database</span><span class="p">.</span>
+  if (!this.hasErrors() &amp;&amp; this.hasChanged(&#39;password&#39;)) {
 
-<span class="nx">beforeSave</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    bcrypt.hash(this.get(&#39;password&#39;), 10, (err, hash) =&gt; {
 
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasErrors</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasChanged</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">))</span> <span class="p">{</span>
+      if (err) {
+        return callback(new Error(&#39;Could not encrypt password&#39;));
+      }
 
-    <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">hash</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      this.__safeSet__(&#39;password&#39;, hash);
+      callback();
 
-      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Could not encrypt password&#39;</span><span class="p">));</span>
-      <span class="p">}</span>
+    });
 
-      <span class="k">this</span><span class="p">.</span><span class="nx">__safeSet__</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="nx">hash</span><span class="p">);</span>
-      <span class="nx">callback</span><span class="p">();</span>
+  } else {
 
-    <span class="p">});</span>
+    callback();
 
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  }
 
-    <span class="nx">callback</span><span class="p">();</span>
-
-  <span class="p">}</span>
-
-<span class="p">}</span>
+}
 </code></pre></div>
 <p>Implements password verification</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/user.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
 <span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
   <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -1108,15 +1108,15 @@ Modify: ./app/router.js
 <p>Let&#39;s fix the response interface so that we don&#39;t send the hashed password field in our response.</p>
 <h2><a class="anchor" name="api-endpoint-response-interface"></a>API Endpoint Response Interface <a class="hash-link" href="#api-endpoint-response-interface">#</a></h2>
 <p>Our <code>users_controller.js</code> file is where we specify the response data to API requests. We can specify an interface to describe those responses. We can edit any of our responses by adding an array specifying what model data we want to send in our response. In this case we&#39;ll add <code>[&#39;id&#39;,&#39;username&#39;,&#39;email&#39;,&#39;created_at&#39;]</code> as an argument to <code>this.respond()</code> on our index method in our <code>users_controller.js</code> file, which corresponds to a GET request to <code>/v1/users/</code> endpoint.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/users_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/users_controller.js</span>
 <span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
 
 <span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
   <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">]);</span>
-
+<span class="hll">    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">]);</span>
+</span>
   <span class="p">});</span>
 
 <span class="p">}</span>
@@ -1147,8 +1147,10 @@ Modify: ./app/router.js
 
 <p>Not only that, we can do this right in our tweet model!</p>
 
-<p>We&#39;ll break this down step by step, but this is what our tweets model will look like when we&#39;re done associating tweets and users:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/tweet.js</span>
+<p>First we require our User model into tweet.js.</p>
+
+<p>Then we can use the <code>Nodal.Model.joinsTo</code> method to join our tweet model to our user model, with a specification that a User has multiple tweets</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/tweet.js{7,14}</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -1169,13 +1171,7 @@ Modify: ./app/router.js
 
 <span class="p">})();</span>
 </code></pre></div>
-<p>First we require our User model into tweet.js</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
-</code></pre></div>
-<p>Then we can use the Nodal.Model.joinsTo method to join our tweet model to our user model, with a specification that a User has multiple tweets</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">Tweet</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span>
-</code></pre></div>
-<p>This is a combination of two associations from Rails: has<em>many and belongs</em>to. Additionally Nodal is strict about being &quot;bottom up&quot; with joins. Because Nodal is explicit about dependencies, we need to avoid cyclical joins; Nodal won&#39;t magically resolve them for you. Therefor the parent ID should always be in a child table, and never the other way around. Tweets belong to Users. Users are the parents, tweets are their children.</p>
+<p><code>joinsTo</code> and <code>{multiple:true}</code> is a combination of two associations from Rails: <code>has_many</code> and <code>belongs_to</code>. Additionally Nodal is strict about being &quot;bottom up&quot; with joins. Because Nodal is explicit about dependencies, we need to avoid cyclical joins; Nodal won&#39;t magically resolve them for you. Therefor the parent ID should always be in a child table, and never the other way around. Tweets belong to Users. Users are the parents, tweets are their children.</p>
 
 <p>Therefor we always go to the child model, require the parent, and <code>doChild.joinsTo(Parent, {multiple:true})</code></p>
 <h2><a class="anchor" name="query-strings-on-joined-tables"></a>Query Strings on Joined Tables <a class="hash-link" href="#query-strings-on-joined-tables">#</a></h2>
@@ -1356,34 +1352,34 @@ Modify: ./app/router.js
 <p>First we user the query composer <code>join()</code> method to join the user model into the response. Second, we also specify the interface for the response.</p>
 
 <p>Let&#39;s say in our response, we want to show the tweet id, body and created<em>at, and only show the user</em>id, username and created<em>at. Our interface for the Tweet model <code>query()</code> joined with the User model would be `[&#39;id&#39;, &#39;body&#39;,&#39;created</em>at&#39;, {user: [&#39;id&#39;, &#39;username&#39;, &#39;created_at&#39;]}]`.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">// ./app/controllers/v1/tweets_controller.js
-module.exports = (function() {
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
-  &#39;use strict&#39;;
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
-  const Nodal = require(&#39;nodal&#39;);
-  const Tweet = Nodal.require(&#39;app/models/tweet.js&#39;);
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">Tweet</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/tweet.js&#39;</span><span class="p">);</span>
 
-  class V1TweetsController extends Nodal.Controller {
+  <span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
-    index() {
+    <span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
 
-      Tweet.query()
-        .join(&#39;user&#39;)
-        .where(this.params.query)
-        .end((err, models) =&gt; {
+      <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-          this.respond(err || models, [&#39;id&#39;, &#39;body&#39;,&#39;created_at&#39;, {user: [&#39;id&#39;, &#39;username&#39;, &#39;created_at&#39;]}]);
+<span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">user</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;created_at&#39;</span><span class="p">]}]);</span>
+</span>
+        <span class="p">});</span>
 
-        });
+    <span class="p">}</span>
 
-    }
+    <span class="p">...</span>
 
-    ...
+  <span class="p">}</span>
 
-  }
-
-}
+<span class="p">}</span>
 </code></pre></div>
 <p>The string passed to the <code>.join()</code> is a reference to the model we would like to join. The reference syntax is just the Camel-case of the class name that we want to join.</p>
 
@@ -1440,10 +1436,10 @@ Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 </code></pre></div>
 <p>Our <code>./app/models/access_token.js</code> file has a lot going on. As always, we&#39;re equipped to interpret what Nodal has generated. Much if it should begin to look familiar.</p>
 
-<p>Access tokens rely on verification of a user. If we look in <code>./app/models/access_token.js</code> we&#39;ll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicity– for generating access tokens.</p>
+<p>Access tokens rely on verification of a user. If we look in <code>./app/models/access_token.js</code> we&#39;ll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.</p>
 
-<p>The static method generateAccessTokenString() uses crypto to generate an access token string.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/access_token.js</span>
+<p>The static method <code>generateAccessTokenString()</code> uses crypto to generate an access token string.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/access_token.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -1578,7 +1574,7 @@ Modify: ./app/router.js
 <p>So lets go to <code>./app/controllers/v1/access_tokens_controller.js</code> and erase all those generated methods and build our first Nodal controller from just-about-scratch.</p>
 
 <p>First we need a method for creating an access token. To do this we use the login() method on the AccessToken model, inside of the access token controller&#39;s create() method. The login method takes two arguments, the first is the params passed to the request, and the second is the callback, which we&#39;ll use to generates the response on login.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/access_tokens_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/access_tokens_controller.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -1588,14 +1584,14 @@ Modify: ./app/router.js
 
   <span class="kr">class</span> <span class="nx">V1AccessTokensController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
-    <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
-      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-        <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
-
-      <span class="p">});</span>
-    <span class="p">}</span>
-
+<span class="hll">    <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">    <span class="p">}</span>
+</span>
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="nx">V1AccessTokensController</span><span class="p">;</span>
@@ -1617,7 +1613,7 @@ Modify: ./app/router.js
   <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>This makes sense! Our access_tokens controller doesn&#39;t have a defined index() or show()method. We erased them both! And we&#39;ve only implemented a create() method, which corresponds to handling a POST request.</p>
+<p>This makes sense! Our access_tokens controller doesn&#39;t have a defined <code>index()</code> or <code>show()</code> method. We erased them both! And we&#39;ve only implemented a create() method, which corresponds to handling a POST request.</p>
 
 <p>So now let&#39;s do a POST to <code>/v1/access_tokens</code>.</p>
 
@@ -1635,14 +1631,14 @@ Modify: ./app/router.js
 }
 </code></pre></div>
 <p>If we go into <code>app/models/access_token.js</code> and look at the login method</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/models/access_token.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
 
 <span class="kr">static</span> <span class="nx">login</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
 
   <span class="k">if</span> <span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">grant_type</span> <span class="o">!==</span> <span class="s1">&#39;password&#39;</span><span class="p">){</span>
 
-    <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Must supply grant_type&#39;</span><span class="p">));</span>
-
+<span class="hll">    <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Must supply grant_type&#39;</span><span class="p">));</span>
+</span>
   <span class="p">}</span>
 
   <span class="p">...</span>
@@ -1651,7 +1647,7 @@ Modify: ./app/router.js
 </code></pre></div>
 <p>we see the exact error that we just received in our response!</p>
 
-<p>A <code>grant_type</code> is part of the OAuth spec, and you can read a useful blog post about grant_types <a href="">here</a>.</p>
+<p>A <code>grant_type</code> is part of the OAuth spec, and you can read a useful blog post about grant_types <a href="http://alexbilbie.com/2013/02/a-guide-to-oauth-2-grants/">here</a>.</p>
 
 <p>Let&#39;s add a <code>grant_type = password</code> to our POST request</p>
 
@@ -1669,7 +1665,7 @@ Modify: ./app/router.js
 <span class="p">}</span>
 </code></pre></div>
 <p>Let&#39;s go look at what else is happening in our access token model. After our <code>grant_type</code> check we have our query composer method chain!</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/models/access_token.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
 
 <span class="p">...</span>
 
@@ -1687,7 +1683,7 @@ Modify: ./app/router.js
 
    <span class="p">})</span>
 
-<span class="nx">So</span> <span class="nx">lets</span> <span class="nx">supply</span> <span class="nx">a</span> <span class="nx">username</span> <span class="o">=</span> <span class="nx">keithwhor</span> <span class="k">in</span> <span class="nx">our</span> <span class="nx">POST</span> <span class="nx">request</span><span class="o">!</span>
+<span class="nx">So</span> <span class="nx">lets</span> <span class="nx">supply</span> <span class="nx">a</span> <span class="err">`</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">keithwhor</span><span class="err">`</span> <span class="k">in</span> <span class="nx">our</span> <span class="nx">POST</span> <span class="nx">request</span><span class="o">!</span>
 
 <span class="nx">And</span> <span class="nx">now</span> <span class="nx">we</span> <span class="nx">get</span> <span class="nx">an</span> <span class="s2">&quot;Invalid credentials&quot;</span> <span class="nx">error</span> <span class="nx">message</span><span class="o">!</span>
 
@@ -1704,29 +1700,29 @@ Modify: ./app/router.js
 <span class="p">}</span>
 </code></pre></div>
 <p>Great! We know where that&#39;s probably coming from!</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">//app/models/access_token.js
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
 
-User.query()
-  .where({username: params.body.username})
-  .end((err, users) =&gt; {
+<span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">username</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">})</span>
+  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-    ...
+    <span class="p">...</span>
 
-    let user = users[0];
+    <span class="kd">let</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">users</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
 
-    user.verifyPassword(params.body.password, (err,result) =&gt; {
+    <span class="nx">user</span><span class="p">.</span><span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-      if (err || !result) {
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
 
-        return callback(new Error(&#39;Invalid credentials&#39;));
+<span class="hll">        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid credentials&#39;</span><span class="p">));</span>
+</span>
+      <span class="p">}</span>
 
-      }
-
-  })
+  <span class="p">})</span>
 </code></pre></div>
 <p>Sure enough there&#39;s our &#39;Invalid credentials&#39; error.</p>
 
-<p>So let&#39;s provide some credentials! Specifically, lets provide password = password in our POST request.</p>
+<p>So let&#39;s provide some credentials! Specifically, lets provide <code>password = password</code> in our POST request.</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
   <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -1774,12 +1770,12 @@ User.query()
 
 <span class="p">}</span>
 </code></pre></div>
-<p>We can replace the default Nodal.Controller with an AuthController by requiring <code>./app/controllers/auth_controller.js</code> into our <code>tweets_controller</code> and then replacing <code>Nodal.Controller</code> with <code>AuthController</code>.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/controllers/tweets_controller.js</span>
-<span class="kr">const</span> <span class="nx">AuthController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/auth_controller.js&#39;</span><span class="p">);</span>
-
-<span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">AuthController</span> <span class="p">{</span>
-  <span class="nx">index</span><span class="p">(){...}</span>
+<p>We can replace the default <code>Nodal.Controller</code> with an <code>AuthController</code> by requiring <code>./app/controllers/auth_controller.js</code> into our <code>tweets_controller</code> and then replacing <code>Nodal.Controller</code> with <code>AuthController</code>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/tweets_controller.js</span>
+<span class="hll"><span class="kr">const</span> <span class="nx">AuthController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/auth_controller.js&#39;</span><span class="p">);</span>
+</span>
+<span class="hll"><span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">AuthController</span> <span class="p">{</span>
+</span>  <span class="nx">index</span><span class="p">(){...}</span>
   <span class="nx">show</span><span class="p">(){...}</span>
   <span class="nx">create</span><span class="p">(){...}</span>
   <span class="nx">update</span><span class="p">(){...}</span>
@@ -1787,7 +1783,7 @@ User.query()
 <span class="p">}</span>
 </code></pre></div>
 <p>The <code>AuthController</code> itself also extends the <code>Nodal.Controller</code>, including all the methods we&#39;ve been using for our basic API end points, but provides an additional <code>authorize()</code> method.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/auth_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -1796,15 +1792,15 @@ User.query()
 
   <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
-    <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
-      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
-
-      <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
-
-    <span class="p">}</span>
-
+<span class="hll">    <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="nx">AuthController</span><span class="p">;</span>
@@ -1813,10 +1809,10 @@ User.query()
 </code></pre></div>
 <p>Now we can go into the <code>create()</code> method of our Tweet controller, and use the <code>authorize()</code> method from the AuthController! And we can wrap our tweet creation logic in a callback that gets passed to authorize!</p>
 
-<p>Specifically, we&#39;ll pass an anonymous function as the callback to this.authorize(). That callback will be provided error object, an access token and our user. You can check the function signature of our <code>AuthoController</code> <code>authorize()</code> method to see that the callback it takes as an argument is up to us to define. We&#39;ll use <code>authorize()</code> to <code>verify()</code> the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model&#39;s <code>create()</code> method to create a tweet.</p>
+<p>Specifically, we&#39;ll pass an anonymous function as the callback to <code>this.authorize()</code>. That callback will be provided error object, an access token and our user. You can check the function signature of our <code>AuthoController</code> <code>authorize()</code> method to see that the callback it takes as an argument is up to us to define. We&#39;ll use <code>authorize()</code> to <code>verify()</code> the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model&#39;s <code>create()</code> method to create a tweet.</p>
 
 <p>That create methods looks like this:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
@@ -1832,26 +1828,26 @@ User.query()
 
     <span class="nx">show</span><span class="p">()</span> <span class="p">{...}</span>
 
-    <span class="nx">create</span><span class="p">(){</span>
-
-      <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-
-          <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-        <span class="p">}</span>
-
-        <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
-
-        <span class="p">});</span>
-
-      <span class="p">});</span>
-
-    <span class="p">}</span>
-
+<span class="hll">    <span class="nx">create</span><span class="p">(){</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
     <span class="nx">update</span><span class="p">()</span> <span class="p">{...}</span>
 
     <span class="nx">destroy</span><span class="p">()</span> <span class="p">{...}</span>
@@ -1873,8 +1869,8 @@ User.query()
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
   <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
-  <span class="kr">const</span> <span class="nx">AccessToken</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/access_token.js&#39;</span><span class="p">);</span>
-
+<span class="hll">  <span class="kr">const</span> <span class="nx">AccessToken</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/access_token.js&#39;</span><span class="p">);</span>
+</span>
   <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
     <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
@@ -1882,8 +1878,8 @@ User.query()
       <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
 
-      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
-
+<span class="hll">      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+</span>
     <span class="p">}</span>
 
   <span class="p">}</span>
@@ -1904,42 +1900,33 @@ User.query()
   <span class="p">},</span>
   <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
 <span class="p">}</span>
-
-<span class="err">We</span> <span class="err">get</span> <span class="err">an</span> <span class="err">error</span> <span class="err">message</span> <span class="err">telling</span> <span class="err">us</span> <span class="err">that</span> <span class="err">we&#39;re</span> <span class="err">missing</span> <span class="err">our</span> <span class="err">access</span> <span class="err">token!</span>
-
-<span class="err">So</span> <span class="err">let&#39;s</span> <span class="err">add</span> <span class="err">our</span> <span class="err">access</span> <span class="err">token</span> <span class="err">as</span> <span class="err">a</span> <span class="err">query</span> <span class="err">parameter!</span>
 </code></pre></div>
-<p>localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
-```</p>
+<p>We get an error message telling us that we&#39;re missing our access token!</p>
 
+<p>So let&#39;s add our access token as a query parameter!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
+</code></pre></div>
 <p>And it posted! But the new user is still null!</p>
-
-<p><code>json
-{
-  &quot;meta&quot;: {
-    &quot;total&quot;: 1,
-    &quot;count&quot;: 1,
-    &quot;offset&quot;: 0,
-    &quot;error&quot;: null
-  },
-  &quot;data&quot;: [
-    {
-      &quot;id&quot;: 14,
-      &quot;user_id&quot;: null,
-      &quot;body&quot;: &quot;I&#39;m authenticated!&quot;,
-      &quot;created_at&quot;: &quot;2016-04-15T23:38:45.121Z&quot;,
-      &quot;updated_at&quot;: &quot;2016-04-15T23:38:45.122Z&quot;
-    }
-  ]
-}
-</code>`</p>
-
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;I&#39;m authenticated!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:38:45.121Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:38:45.122Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
 <p>Let&#39;s quick fix that in our controller&#39;s create method, by adding this line:</p>
-
-<blockquote>
-<p>tutorial breaks down here because user is undefined</p>
-</blockquote>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -1950,7 +1937,7 @@ User.query()
 
     <span class="p">}</span>
 
-<span class="o">&gt;</span>    <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
 
     <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
@@ -1965,7 +1952,7 @@ User.query()
 <p>And we&#39;re there! A post to:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
 </code></pre></div>
-<p>Gets a response with the user_id corresponding to the access token:</p>
+<p>Gets a response with the <code>user_id</code> corresponding to the access token:</p>
 <div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
   <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
     <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -2021,17 +2008,17 @@ User.query()
 <p>Let do a quick refactor that will highlight some useful pieces of how Nodal is written, and give you an idea of how you as the developer can choose how to best extend Nodal for your API server.</p>
 
 <p>We can actually refactor the error logic in our <code>tweets_controller.js</code> <code>create()</code> method, by removing it from the callback that we pass to <code>authorize()</code>:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/controllers/v1/tweets_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/v1/tweets_controller.js</span>
 <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-    <span class="p">}</span>
-
+<span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
 
     <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -2045,15 +2032,15 @@ User.query()
 <span class="p">}</span>
 </code></pre></div>
 <p>We can then add it to the callback function passed to our <code>AccessToken.verify()</code> method invoked in the authorize method in our <code>auth_controller.js</code> file.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/controllers/auth_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/auth_controller.js</span>
 <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-
-    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-  <span class="p">}</span>
-
+<span class="hll">  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
   <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
 
@@ -2064,7 +2051,7 @@ User.query()
 <p>At this point, any call to <code>authorize()</code> will respond with an error –if there is an error– no matter where or when it&#39;s invoked.</p>
 
 <p>Or we can go further and move this error logic into our <code>AccessToken.verify()</code> callback:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/auth_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
 <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
   <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
@@ -2074,12 +2061,12 @@ User.query()
 
     <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
 
-      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-
-        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
-
-      <span class="p">}</span>
-
+<span class="hll">      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span>
+</span>
       <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
 
     <span class="p">});</span>
@@ -2089,12 +2076,12 @@ User.query()
 </code></pre></div>
 <p>And this way any call to <code>AccessToken.verify()</code> will respond to an error –if there is an error– no matter where or when it&#39;s invoked.</p>
 
-<p>With this refactor, we can actually remove the err all together from both the callback passed to authorize() and from the callback invoked on successful authorization.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<p>With this refactor, we can actually remove the err all together from both the callback passed to <code>authorize()</code> and from the callback invoked on successful authorization.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
 
-  <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
+<span class="hll">  <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span>
     <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
 
     <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
@@ -2106,7 +2093,7 @@ User.query()
   <span class="p">});</span>
 
 <span class="p">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/controllers/auth_controller.js</span>
+</code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
 <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
   <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
@@ -2122,8 +2109,8 @@ User.query()
 
       <span class="p">}</span>
 
-      <span class="nx">callback</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
-
+<span class="hll">      <span class="nx">callback</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+</span>
     <span class="p">});</span>
   <span class="p">}</span>
 
@@ -2131,7 +2118,7 @@ User.query()
 </code></pre></div>
 <p>We can test any of these refactors by sending a POST with a valid token, and then another with an invalid token, and verifying the expected response.</p>
 <h2><a class="anchor" name="destroying-access-tokens"></a>Destroying Access Tokens <a class="hash-link" href="#destroying-access-tokens">#</a></h2>
-<p>The easiest way is just to send a DELETE request, to the /v1/access_tokens endpoint, providing the access token you want to delete as a query string argument.</p>
+<p>The easiest way is just to send a DELETE request, to the <code>/v1/access_tokens</code> endpoint, providing the access token you want to delete as a query string argument.</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/access_tokens/76ab6fca89b74d9d7333feb4ed799a88
 </code></pre></div>
 <p>If you test this, you&#39;ll get a 501 - Not Implemented</p>
@@ -2141,7 +2128,7 @@ User.query()
 <p>That error means we haven&#39;t implemented a <code>destroy()</code> method in our <code>access_tokens_controller.js</code> file.</p>
 
 <p>So let&#39;s implement a <code>destroy()</code> method that adheres to the same approach as our <code>create()</code> method. We&#39;ll use the logout method implemented by our AccessToken model</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/v1/access_tokens_controller.js</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/v1/access_tokens_controller.js</span>
 <span class="kr">class</span> <span class="nx">V1AccessTokensController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
 
   <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
@@ -2154,16 +2141,16 @@ User.query()
 
   <span class="p">}</span>
 
-  <span class="nx">destroy</span><span class="p">()</span> <span class="p">{</span>
-
-    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">logout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
-
-    <span class="p">});</span>
-
-  <span class="p">}</span>
-
+<span class="hll">  <span class="nx">destroy</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">logout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Now if we do a DELETE to <code>/v1/access_tokens/</code> without providing a token, we might expect to get an error response saying &quot;Your access token is invalid.&quot; The response this returns &quot;Not implemented&quot;.</p>
@@ -2193,8 +2180,8 @@ User.query()
   <span class="p">]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Ideally we would want to omit the id in the path. Generally, Nodal tends to be transparent and consistent with it&#39;s behavior. If we look in router.js we see that the Nodal access token generator has added a route that includes the id:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/router.js</span>
+<p>Ideally we would want to omit the id in the path. Generally, Nodal tends to be transparent and consistent with it&#39;s behavior. If we look in <code>router.js</code> we see that the Nodal access token generator has added a route that includes the id:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/router.js</span>
 <span class="cm">/* generator: begin routes */</span>
 
 <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/tweets/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1TweetsController</span><span class="p">);</span>
@@ -2208,7 +2195,7 @@ User.query()
 <p>We can go check our server log in our terminal window to see what was actually run in the DB</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">DELETE FROM &quot;access_tokens&quot; WHERE (&quot;id&quot;) = ($1) RETURNING *
 </code></pre></div>
-<p>We can verify that our access token is no longer valid by sending a post request to our /v1/tweets endpoint passing our now-deleted access token as a query string:</p>
+<p>We can verify that our access token is no longer valid by sending a post request to our <code>/v1/tweets</code> endpoint passing our now-deleted access token as a query string:</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=76ab6fca89b74d9d7333feb4ed799a88
 </code></pre></div>
 <p>And we&#39;ll get an error message response</p>
