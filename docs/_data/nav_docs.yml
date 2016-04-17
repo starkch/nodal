@@ -27,7 +27,15 @@
   - id: cascading-joins
     title: Cascading Joins
   - id: database-seeds
-    title: Database Seeds                 
+    title: Database Seeds
+  - id: middleware
+    title: Middleware
+  - id: renderware
+    title: Renderware
+  - id: scheduled-tasks
+    title: Scheduled Tasks
+  - id: pg-json-support
+    title: PG json Support
 - title: Community Resources
   items:
   - id: videos
