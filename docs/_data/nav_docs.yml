@@ -23,7 +23,11 @@
   - id: tests-as-first-class-citizens
     title: Tests As First Class Citizens
   - id: deep-joins
-    title: Deep Joins         
+    title: Deep Joins
+  - id: cascading-joins
+    title: Cascading Joins
+  - id: database-seeds
+    title: Database Seeds                 
 - title: Community Resources
   items:
   - id: videos
