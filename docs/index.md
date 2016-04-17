@@ -23,7 +23,7 @@ id: home
     <div class="marketing-col">
       <h3>Scalable Foundation</h3>
       <p>
-        Nodal implements stateless architecture, encouraging scalable, distributed services by design, instead of afterthought.
+        Nodal implements stateless architecture, encouraging scalable distributed services by design, instead of afterthought.
       </p>
     </div>
   </div>
