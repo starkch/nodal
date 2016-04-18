@@ -17,7 +17,7 @@ id: home
     <div class="marketing-col">
       <h3>Battle Tested Design</h3>
       <p>
-        Nodal transparently implements battle-tested server-side design patterns and abstractions, with out-of-the-box Postgres integration, making smart decisions from day one, and protecting developers from decision fatigue.
+        Nodal transparently implements battle-tested server-side design patterns and abstractions from Rails and Django and comes with out-of-the-box Postgres integration, making smart decisions from day one to avoid node.js decision fatigue.
       </p>
     </div>
     <div class="marketing-col">
@@ -32,9 +32,9 @@ id: home
 <section class="home-section">
   <div id="examples">
     <div class="example">
-      <h3>A Simple Tweet Model</h3>
+      <h3>A Simple User API</h3>
       <p>
-        Insert simple tweet model example
+        Nodal APIs are built with smart, transparent and modular generators generators. The `/users` API endpoint behind this React component was set up with 3 commands: `nodal g:model --user`, `nodal g:controller --for User` `nodal poly:deploy`. Every visitor to Nodal gets their very own user account!
       </p>
       <div id="helloExample"></div>
     </div>
@@ -52,7 +52,16 @@ id: home
       </p>
       <div id="todoExample"></div>
     </div>
+    <div class="example">
+      <h3>A Component Using External Plugins</h3>
+      <p>
+        React is flexible and provides hooks that allow you to interface with
+        other libraries and frameworks. This example uses **marked**, an external
+        Markdown library, to convert the textarea's value in real-time.
+      </p>
+    <div id="markdownExample"></div>
     </div>
+
   </div>
   <script src="/nodal/js/marked.min.js"></script>
   <script src="/nodal/js/examples/hello.js"></script>
