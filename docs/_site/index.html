@@ -37,13 +37,20 @@
   <script src="/nodal/js/babel-browser.min.js"></script>
   <script src="/nodal/js/live_editor.js"></script>
   <script src="/nodal/js/browser_cuid.js"></script>
+
+
   <script>
     var httpRequest = new XMLHttpRequest();
     var userEndpoint = 'http://localhost:3000/v1/users';
 
-    var userName = cuid();
+    var userName = 'user_' + cuid();
     var email = userName + '@gmail.com';
     var password = 'password';
+
+    var currentUsername;
+    var currentEmail;
+    var currentUserID;
+    var currentUserDisplayName;
 
     var userPOSTdata =
     'username=' + userName + '&' +
@@ -57,11 +64,16 @@
         if (httpRequest.status === 200) {
           var response = JSON.parse(httpRequest.responseText);
 
+          console.log(response.data[0].username);
+          currentUsername = response.data[0].username;
+          currentUserID = response.data[0].id;
+          currentUserDisplayName = 'user_' + currentUserID;
+
           console.log(httpRequest.responseText);
 
         } else {
 
-          //var response = JSON.parse(httpRequest.responseText);
+          var response = JSON.parse(httpRequest.responseText);
           console.log('status not 200');
           console.log(httpRequest.status);
           console.log(httpRequest.responseText);
@@ -151,7 +163,7 @@
     <div class="marketing-col">
       <h3>Battle Tested Design</h3>
       <p>
-        Nodal transparently implements battle-tested server-side design patterns and abstractions, with out-of-the-box Postgres integration, making smart decisions from day one, and protecting developers from decision fatigue.
+        Nodal transparently implements battle-tested server-side design patterns and abstractions from Rails and Django and comes with out-of-the-box Postgres integration, making smart decisions from day one to avoid node.js decision fatigue.
       </p>
     </div>
     <div class="marketing-col">
@@ -167,9 +179,9 @@
 <section class="home-section">
   <div id="examples">
     <div class="example">
-      <h3>A Simple Tweet Model</h3>
+      <h3>A Simple User API</h3>
       <p>
-        Insert simple tweet model example
+        Nodal APIs are built with smart, transparent and modular generators generators. The <code>/users</code> API endpoint behind this React component was set up with 3 commands: <code>nodal g:model --user</code>, <code>nodal g:controller --for User</code> <code>nodal poly:deploy</code>. Every visitor to Nodal gets their very own user account!
       </p>
       <div id="helloExample"></div>
     </div>
@@ -187,8 +199,17 @@
       </p>
       <div id="todoExample"></div>
     </div>
-    </div>
-  </div>
+    <div class="example">
+      <h3>A Component Using External Plugins</h3>
+      <p>
+        React is flexible and provides hooks that allow you to interface with
+        other libraries and frameworks. This example uses <strong>marked</strong>, an external
+        Markdown library, to convert the textarea&#39;s value in real-time.
+      </p>
+    <div id="markdownExample"></div>
+    </div></p>
+
+<p></div>
   <script src="/nodal/js/marked.min.js"></script>
   <script src="/nodal/js/examples/hello.js"></script>
   <script src="/nodal/js/examples/timer.js"></script>

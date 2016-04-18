@@ -37,13 +37,20 @@
   <script src="/nodal/js/babel-browser.min.js"></script>
   <script src="/nodal/js/live_editor.js"></script>
   <script src="/nodal/js/browser_cuid.js"></script>
+
+
   <script>
     var httpRequest = new XMLHttpRequest();
     var userEndpoint = 'http://localhost:3000/v1/users';
 
-    var userName = cuid();
+    var userName = 'user_' + cuid();
     var email = userName + '@gmail.com';
     var password = 'password';
+
+    var currentUsername;
+    var currentEmail;
+    var currentUserID;
+    var currentUserDisplayName;
 
     var userPOSTdata =
     'username=' + userName + '&' +
@@ -57,11 +64,16 @@
         if (httpRequest.status === 200) {
           var response = JSON.parse(httpRequest.responseText);
 
+          console.log(response.data[0].username);
+          currentUsername = response.data[0].username;
+          currentUserID = response.data[0].id;
+          currentUserDisplayName = 'user_' + currentUserID;
+
           console.log(httpRequest.responseText);
 
         } else {
 
-          //var response = JSON.parse(httpRequest.responseText);
+          var response = JSON.parse(httpRequest.responseText);
           console.log('status not 200');
           console.log(httpRequest.status);
           console.log(httpRequest.responseText);
