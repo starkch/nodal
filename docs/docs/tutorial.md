@@ -825,9 +825,21 @@ module.exports = (function() {
 })();
 ```
 
-The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a `beforeSave()` method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point:
+The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a `beforeSave()` method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point.
 
-```javascript
+One step at a time that's:
+
+* Requires the bcrypt package
+
+* Implements a `beforeSave()` method. This method is invoked before data is saved to the database.
+
+* Implements password verification.
+
+* Sets our database and user model schema.
+
+* Invokes two input validations on email and password inputs.
+
+```javascript{6-7,11-32,34-42,44-45,47-48}
 // ./app/models/user.js
 module.exports = (function() {
 
@@ -880,72 +892,6 @@ module.exports = (function() {
   return User;
 
 })();
-```
-
-One step at a time that's:
-
-Requires the bcrypt package
-
-```javascript
-// ./app/models/user.js
-
-const bcrypt = require('bcrypt');
-```
-
-Implements a `beforeSave()` method. This method is invoked before data is saved to the database.
-
-```
-beforeSave(callback) {
-
-  if (!this.hasErrors() && this.hasChanged('password')) {
-
-    bcrypt.hash(this.get('password'), 10, (err, hash) => {
-
-      if (err) {
-        return callback(new Error('Could not encrypt password'));
-      }
-
-      this.__safeSet__('password', hash);
-      callback();
-
-    });
-
-  } else {
-
-    callback();
-
-  }
-
-}
-```
-
-Implements password verification
-
-```javascript
-// ./app/models/user.js
-verifyPassword(unencrypted, callback) {
-
-  bcrypt.compare(unencrypted, this.get('password'), (err, result) => {
-    callback.call(this, err, result);
-  });
-
-}
-```
-
-Sets our database and user model schema:
-
-```js
-// ./app/models/user.js
-User.setDatabase(Nodal.require('db/main.js'));
-User.setSchema(Nodal.my.Schema.models.User);
-```
-
-Invokes two input validations on email and password inputs:
-
-```js
-// ./app/models/user.js
-User.validates('email', 'must be valid', v => v && (v + '').match(/.+@.+\.\w+/i));
-User.validates('password', 'must be at least 5 characters in length', v => v && v.length >= 5);
 ```
 
 This might seem like a lot to parse. But we're equipped to reason through it. Let's try to narrow our scope a bit, by referencing pieces of this generated code that are similar to our tweets model:
@@ -1385,7 +1331,7 @@ We can fix this easily by going to our tweets_controller and joining the user da
 
 First we user the query composer `join()` method to join the user model into the response. Second, we also specify the interface for the response.
 
-Let's say in our response, we want to show the tweet `id`, `body` and `created_at`, and only show the `user_id`, `username` and `created_at`. Our interface for the Tweet model `query()` joined with the User model would be 
+Let's say in our response, we want to show the tweet `id`, `body` and `created_at`, and only show the `user_id`, `username` and `created_at`. Our interface for the Tweet model `query()` joined with the User model would be
 
 ```javascript
 ['id', 'body','created_at', {user: ['id', 'username', 'created_at']}]
@@ -1486,13 +1432,13 @@ Create: ./app/models/access_token.js
 Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 ```
 
-Our `./app/models/access_token.js` file has a lot going on. As always, we're equipped to interpret what Nodal has generated. Much if it should begin to look familiar.
+Our `./app/models/access_token.js` file has a lot going on. As always, we're equipped to interpret what Nodal has generated. This should begin to look familiar.
 
 Access tokens rely on verification of a user. If we look in `./app/models/access_token.js` we'll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.
 
 The static method `generateAccessTokenString()` uses crypto to generate an access token string.
 
-```javascript
+```javascript{7,9}
 // ./app/models/access_token.js
 module.exports = (function() {
 

@@ -15,31 +15,39 @@ Then paste the string into the var EXAMPLE_COMPONENT
 
 Hah. Totally insane. Fix this for later. Or do it once, and hide it. Or something. Jesus.
 
+
 var HelloMessage = React.createClass({
   getInitialState: function() {
     return {username: ''};
   },
 
-  createUser: function() {
-    var unique = cuid();
-    var url = 'http://localhost:3000/v1/users/';
-    var postData = {
-      username: 'user_' + unique,
-      email: unique + '@domain.com',
-      password: 'password',
-    };
+  componentDidMount: function() {
 
-    $.post(url, postData, function (data) {
-    	var id = data.data[0].id;
-        var user = 'visitor_'+id
-    	this.setState({username: user});
-      }.bind(this));
+    this.serverRequest = $.get(this.props.source, function (result) {
+      var lastUser = result.data[result.data.length - 1];
+      var nextUserId = lastUser ? lastUser.id + 1 : 1;
+      var nextUserName = 'user_' + nextUserId;
+
+      var postData = {
+        username: nextUserName,
+        email: nextUserName + '@domain.com',
+        password: nextUserName + 'r0x'
+      }
+
+      $.post(this.props.source, postData, function(result){
+        this.setState({username: result.data[0].username});
+      }.bind(this))
+      .fail(function(jqXHR, textStatus, errorThrown){
+        console.error(jqXHR.responseText);
+
+      })
+
+    }.bind(this));
 
   },
 
-  componentDidMount: function() {
-    this.createUser();
-
+  componentWillUnmount: function() {
+    this.serverRequest.abort();
   },
 
   render: function() {
@@ -47,5 +55,6 @@ var HelloMessage = React.createClass({
   }
 });
 
-ReactDOM.render(<HelloMessage />, mountNode);
+ReactDOM.render(<HelloMessage source='http://localhost:3000/v1/users/' />, mountNode);
+
 */
