@@ -38,6 +38,73 @@
   <script src="/nodal/js/live_editor.js"></script>
   <script src="/nodal/js/browser_cuid.js"></script>
 
+  <!-- jQuery for ajax requests, consider downloading it and not using the cdn -->
+  <!-- Open question: does this overwrite $ in code mirror? Or visa versa -->
+  <script   src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//piwik.turning21.io/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', 8]);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="//piwik.turning21.io/piwik.php?idsite=8" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
+
+  <script>
+    // A few interesting things here:
+    // We use a visitor number retrieved from our analytics to build our examples.
+
+    // Case 1: Browsers that block trackers won't increment our visitor counter. So we need to detect that, and give them an alternate number
+
+    // Case 2: Safari in private mode sets localstorage size to zero.
+    // We'd store the visit number in localstorage. We need to detect that it's unavailable, and give them an alternate number. Just set it as a global.
+
+    //this is all fun, but its nuts. I should just hit the user API, get it's length, and then do one more than that.
+
+    // TODO: Make request over https.
+    // TODO: Handle page reloads. It seems they're not recorded as a visit? Or is it just cached page... will that cause problems? Probably. How to handle.
+
+    // Alright. I think we're doing pretty good here. I mean we're creating a new user on every refresh.
+
+    var ClientStorage = {};
+
+    ClientStorage.setItem = function (k,v){
+      try {
+          sessionStorage.setItem(k, v);
+
+        } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    ClientStorage.getItem = function(k){
+      // Get item from session storage
+      try {
+        return sessionStorage.getItem(k);
+      } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    // $.get(url, function(data){
+    //   //Get the id of the last element in the user array, and add 1
+    //   //That's our new username index.
+    //   nextId = data.data[data.data.length - 1].id + 1
+    //   ClientStorage.setItem('visitor', nextId);
+    // })
+
+  </script>
+
 </head>
 <body>
 
@@ -109,7 +176,7 @@
   </div>
   <div id="fb-root"></div>
 
-  <script>
+  <!-- <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -132,6 +199,6 @@
       indexName: 'nodal',
       inputSelector: '#algolia-doc-search'
     });
-  </script>
+  </script> -->
 </body>
 </html>

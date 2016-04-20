@@ -38,6 +38,73 @@
   <script src="/nodal/js/live_editor.js"></script>
   <script src="/nodal/js/browser_cuid.js"></script>
 
+  <!-- jQuery for ajax requests, consider downloading it and not using the cdn -->
+  <!-- Open question: does this overwrite $ in code mirror? Or visa versa -->
+  <script   src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//piwik.turning21.io/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', 8]);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="//piwik.turning21.io/piwik.php?idsite=8" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
+
+  <script>
+    // A few interesting things here:
+    // We use a visitor number retrieved from our analytics to build our examples.
+
+    // Case 1: Browsers that block trackers won't increment our visitor counter. So we need to detect that, and give them an alternate number
+
+    // Case 2: Safari in private mode sets localstorage size to zero.
+    // We'd store the visit number in localstorage. We need to detect that it's unavailable, and give them an alternate number. Just set it as a global.
+
+    //this is all fun, but its nuts. I should just hit the user API, get it's length, and then do one more than that.
+
+    // TODO: Make request over https.
+    // TODO: Handle page reloads. It seems they're not recorded as a visit? Or is it just cached page... will that cause problems? Probably. How to handle.
+
+    // Alright. I think we're doing pretty good here. I mean we're creating a new user on every refresh.
+
+    var ClientStorage = {};
+
+    ClientStorage.setItem = function (k,v){
+      try {
+          sessionStorage.setItem(k, v);
+
+        } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    ClientStorage.getItem = function(k){
+      // Get item from session storage
+      try {
+        return sessionStorage.getItem(k);
+      } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    // $.get(url, function(data){
+    //   //Get the id of the last element in the user array, and add 1
+    //   //That's our new username index.
+    //   nextId = data.data[data.data.length - 1].id + 1
+    //   ClientStorage.setItem('visitor', nextId);
+    // })
+
+  </script>
+
 </head>
 <body>
 
@@ -879,110 +946,69 @@ Create: ./db/migrations/2016041500085963__create_user.js
 
 <span class="p">})();</span>
 </code></pre></div>
-<p>The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a <code>beforeSave()</code> method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point:</p>
+<p>The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a <code>beforeSave()</code> method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point.</p>
+
+<p>One step at a time that&#39;s:</p>
+
+<ul>
+<li><p>Requires the bcrypt package</p></li>
+<li><p>Implements a <code>beforeSave()</code> method. This method is invoked before data is saved to the database.</p></li>
+<li><p>Implements password verification.</p></li>
+<li><p>Sets our database and user model schema.</p></li>
+<li><p>Invokes two input validations on email and password inputs.</p></li>
+</ul>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
-  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
-  <span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
-
+<span class="hll">  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+</span><span class="hll">  <span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
+</span>
   <span class="kr">class</span> <span class="nx">User</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{</span>
 
-    <span class="nx">beforeSave</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasErrors</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasChanged</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">))</span> <span class="p">{</span>
-
-        <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">hash</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-
-          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Could not encrypt password&#39;</span><span class="p">));</span>
-          <span class="p">}</span>
-
-          <span class="k">this</span><span class="p">.</span><span class="nx">__safeSet__</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="nx">hash</span><span class="p">);</span>
-          <span class="nx">callback</span><span class="p">();</span>
-
-        <span class="p">});</span>
-
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-
-        <span class="nx">callback</span><span class="p">();</span>
-
-      <span class="p">}</span>
-
-    <span class="p">}</span>
-
-    <span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-
-      <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-        <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
-      <span class="p">});</span>
-
-    <span class="p">}</span>
-
-  <span class="p">}</span>
-
-  <span class="nx">User</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
-  <span class="nx">User</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">);</span>
-
-  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;must be valid&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">v</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/.+@.+\.\w+/i</span><span class="p">));</span>
-  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters in length&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
-
+<span class="hll">    <span class="nx">beforeSave</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasErrors</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasChanged</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">hash</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Could not encrypt password&#39;</span><span class="p">));</span>
+</span><span class="hll">          <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">__safeSet__</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="nx">hash</span><span class="p">);</span>
+</span><span class="hll">          <span class="nx">callback</span><span class="p">();</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">callback</span><span class="p">();</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+<span class="hll">    <span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">        <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
+<span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">);</span>
+</span>
+<span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;must be valid&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">v</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/.+@.+\.\w+/i</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters in length&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
+</span>
   <span class="k">return</span> <span class="nx">User</span><span class="p">;</span>
 
 <span class="p">})();</span>
-</code></pre></div>
-<p>One step at a time that&#39;s:</p>
-
-<p>Requires the bcrypt package</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
-
-<span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
-</code></pre></div>
-<p>Implements a <code>beforeSave()</code> method. This method is invoked before data is saved to the database.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">beforeSave(callback) {
-
-  if (!this.hasErrors() &amp;&amp; this.hasChanged(&#39;password&#39;)) {
-
-    bcrypt.hash(this.get(&#39;password&#39;), 10, (err, hash) =&gt; {
-
-      if (err) {
-        return callback(new Error(&#39;Could not encrypt password&#39;));
-      }
-
-      this.__safeSet__(&#39;password&#39;, hash);
-      callback();
-
-    });
-
-  } else {
-
-    callback();
-
-  }
-
-}
-</code></pre></div>
-<p>Implements password verification</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
-<span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-
-  <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
-  <span class="p">});</span>
-
-<span class="p">}</span>
-</code></pre></div>
-<p>Sets our database and user model schema:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/user.js</span>
-<span class="nx">User</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
-<span class="nx">User</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">);</span>
-</code></pre></div>
-<p>Invokes two input validations on email and password inputs:</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// ./app/models/user.js</span>
-<span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;must be valid&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">v</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/.+@.+\.\w+/i</span><span class="p">));</span>
-<span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters in length&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
 </code></pre></div>
 <p>This might seem like a lot to parse. But we&#39;re equipped to reason through it. Let&#39;s try to narrow our scope a bit, by referencing pieces of this generated code that are similar to our tweets model:</p>
 
@@ -1353,7 +1379,7 @@ Modify: ./app/router.js
 
 <p>First we user the query composer <code>join()</code> method to join the user model into the response. Second, we also specify the interface for the response.</p>
 
-<p>Let&#39;s say in our response, we want to show the tweet <code>id</code>, <code>body</code> and <code>created_at</code>, and only show the <code>user_id</code>, <code>username</code> and <code>created_at</code>. Our interface for the Tweet model <code>query()</code> joined with the User model would be </p>
+<p>Let&#39;s say in our response, we want to show the tweet <code>id</code>, <code>body</code> and <code>created_at</code>, and only show the <code>user_id</code>, <code>username</code> and <code>created_at</code>. Our interface for the Tweet model <code>query()</code> joined with the User model would be</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">user</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;created_at&#39;</span><span class="p">]}]</span>
 </code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
@@ -1437,7 +1463,7 @@ Modify: ./app/router.js
 <div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/models/access_token.js
 Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 </code></pre></div>
-<p>Our <code>./app/models/access_token.js</code> file has a lot going on. As always, we&#39;re equipped to interpret what Nodal has generated. Much if it should begin to look familiar.</p>
+<p>Our <code>./app/models/access_token.js</code> file has a lot going on. As always, we&#39;re equipped to interpret what Nodal has generated. This should begin to look familiar.</p>
 
 <p>Access tokens rely on verification of a user. If we look in <code>./app/models/access_token.js</code> we&#39;ll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.</p>
 
@@ -1448,10 +1474,10 @@ Create: ./db/migrations/UTCTimeStamp__create_access_token.js
   <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
 
   <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
-  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
-
-  <span class="kr">const</span> <span class="nx">crypto</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
-
+<span class="hll">  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
+</span>
+<span class="hll">  <span class="kr">const</span> <span class="nx">crypto</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+</span>
   <span class="kr">class</span> <span class="nx">AccessToken</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{</span>
 
     <span class="kr">static</span> <span class="nx">generateAccessTokenString</span><span class="p">()</span> <span class="p">{</span>
@@ -2242,7 +2268,7 @@ Modify: ./app/router.js
   </div>
   <div id="fb-root"></div>
 
-  <script>
+  <!-- <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -2265,6 +2291,6 @@ Modify: ./app/router.js
       indexName: 'nodal',
       inputSelector: '#algolia-doc-search'
     });
-  </script>
+  </script> -->
 </body>
 </html>
