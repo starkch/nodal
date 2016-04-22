@@ -24,10 +24,10 @@ end
 
 desc "update version to match ../package.json"
 task :update_version do
-  react_version = JSON.parse(File.read('../package.json'))['version']
+  nodal_version = JSON.parse(File.read('../package.json'))['version']
   site_config = YAML.load_file('_config.yml')
-  if site_config['react_version'] != react_version
-    site_config['react_version'] = react_version
+  if site_config['nodal_version'] != nodal_version
+    site_config['nodal_version'] = nodal_version
     File.open('_config.yml', 'w+') { |f| f.write(site_config.to_yaml) }
   end
 end
@@ -61,9 +61,9 @@ task :update_acknowledgements do
   File.open('_data/acknowledgements.yml', 'w+') { |f| f.write(cols.to_yaml) }
 end
 
-desc "build into ../../react-gh-pages"
+desc "build into ../../nodal-gh-pages"
 task :release => [:update_version, :js, :fetch_remotes] do
-  system "jekyll build -d ../../react-gh-pages"
+  system "jekyll build -d ../../nodal-gh-pages"
 end
 
 task :default => [:js]
