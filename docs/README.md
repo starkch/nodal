@@ -1,6 +1,6 @@
-# React Documentation & Website
+# Nodal Documentation & Website
 
-We use [Jekyll](http://jekyllrb.com/) to build the site using ([mostly](http://zpao.com/posts/adding-line-highlights-to-markdown-code-fences/)) Markdown, and we host it by pushing HTML to [GitHub Pages](http://pages.github.com/).
+We use [Jekyll](http://jekyllrb.com/) to build the site using ([mostly](http://zpao.com/posts/adding-line-highlights-to-markdown-code-fences/)) Markdown, and we host it by pushing HTML to [GitHub Pages](http://pages.github.com/). This approach is borrowed from react's CC4.0 docs. 
 
 ## Installation
 
@@ -50,13 +50,11 @@ $ bundle exec rake watch # Automatically compiles as needed.
 
 ## Afterthoughts
 
-### Updating `facebook.github.io/react`
+### Updating `nsipplswezey.github.io/nodal`
 
-The easiest way to do this is to have a separate clone of this repository, checked out to the `gh-pages` branch. We have a build step that expects this to be in a directory named `react-gh-pages` at the same depth as `react`. Then it's just a matter of running `grunt docs`, which will compile the site and copy it out to this repository. From there, you can check it in.
+The easiest way to do this is to have a separate clone of this repository, checked out to the `gh-pages` branch. We have a build step that expects this to be in a directory named `nodal-gh-pages` at the same depth as `nodal`.
 
-**Note:** This should only be done for new releases. You should create a tag corresponding to the release tag in the main repository.
-
-We also have a rake task that does the same thing (without creating commits). It expects the directory structure mentioned above.
+Use the following task.  It expects the directory structure mentioned above.
 
 ```sh
 $ bundle exec rake release
