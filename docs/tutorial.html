@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Tutorial | Nodal</title>
+  <meta name="viewport" content="width=device-width">
+  <meta property="og:title" content="Tutorial | Nodal">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://facebook.github.io/nodal/docs/tutorial.html">
+  <meta property="og:image" content="www.nodaljs.com/static/images/favicon_blue.png">
+  <meta property="og:description" content="Node.js web servers optimized for building API services quickly and efficiently.">
+  <meta property="fb:app_id" content="623268441017527">
+
+  <link rel="shortcut icon" href="www.nodaljs.com/static/images/favicon_blue.png">
+  <link rel="alternate" type="application/rss+xml" title="Nodal" href="https://nsipplswezey.github.io/nodal/feed.xml">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css" />
+  <link rel="stylesheet" href="/nodal/css/syntax.css">
+  <link rel="stylesheet" href="/nodal/css/codemirror.css">
+  <link rel="stylesheet" href="/nodal/css/react.css">
+
+  <script src="//use.typekit.net/vqa1hcx.js"></script>
+  <script>try{Typekit.load();}catch(e){}</script>
+
+  <!--[if lte IE 8]>
+  <script src="/nodal/js/html5shiv.min.js"></script>
+  <script src="/nodal/js/es5-shim.min.js"></script>
+  <script src="/nodal/js/es5-sham.min.js"></script>
+  <![endif]-->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script>
+  <script src="/nodal/js/codemirror.js"></script>
+  <script src="/nodal/js/javascript.js"></script>
+  <script src="/nodal/js/react.js"></script>
+  <script src="/nodal/js/react-dom.js"></script>
+  <script src="/nodal/js/babel-browser.min.js"></script>
+  <script src="/nodal/js/live_editor.js"></script>
+  <script src="/nodal/js/browser_cuid.js"></script>
+
+  <!-- jQuery for ajax requests, consider downloading it and not using the cdn -->
+  <!-- Open question: does this overwrite $ in code mirror? Or visa versa -->
+  <script   src="https://code.jquery.com/jquery-1.12.3.min.js" integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
+
+  <!-- Piwik -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//piwik.turning21.io/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', 8]);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="//piwik.turning21.io/piwik.php?idsite=8" style="border:0;" alt="" /></p></noscript>
+  <!-- End Piwik Code -->
+
+  <script>
+    // A few interesting things here:
+    // We use a visitor number retrieved from our analytics to build our examples.
+
+    // Case 1: Browsers that block trackers won't increment our visitor counter. So we need to detect that, and give them an alternate number
+
+    // Case 2: Safari in private mode sets localstorage size to zero.
+    // We'd store the visit number in localstorage. We need to detect that it's unavailable, and give them an alternate number. Just set it as a global.
+
+    //this is all fun, but its nuts. I should just hit the user API, get it's length, and then do one more than that.
+
+    // TODO: Make request over https.
+    // TODO: Handle page reloads. It seems they're not recorded as a visit? Or is it just cached page... will that cause problems? Probably. How to handle.
+
+    // Alright. I think we're doing pretty good here. I mean we're creating a new user on every refresh.
+
+    var ClientStorage = {};
+
+    ClientStorage.setItem = function (k,v){
+      try {
+          sessionStorage.setItem(k, v);
+
+        } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    ClientStorage.getItem = function(k){
+      // Get item from session storage
+      try {
+        return sessionStorage.getItem(k);
+      } catch (e) {
+        // handle exception e, provide fallback, ..
+      }
+
+    }
+
+    // $.get(url, function(data){
+    //   //Get the id of the last element in the user array, and add 1
+    //   //That's our new username index.
+    //   nextId = data.data[data.data.length - 1].id + 1
+    //   ClientStorage.setItem('visitor', nextId);
+    // })
+
+  </script>
+
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="nav-main">
+      <div class="wrap">
+        <a class="nav-home" href="/nodal/index.html">
+          <img class="nav-logo" src="/nodal/img/logo_light.png" width="36" height="36">
+          Nodal
+        </a>
+        <ul class="nav-site nav-site-internal">
+          <li><a href="/nodal/docs/getting-started.html" class="active">Docs</a></li>
+          <li><a href="/nodal/support.html">Support</a></li>
+          <li><a href="/nodal/downloads.html">Download</a></li>
+          <li><a href="/nodal/blog/">Blog</a></li>
+          <li>
+            <input id="algolia-doc-search" type="text" placeholder="Search docs..." />
+          </li>
+        </ul>
+
+        <ul class="nav-site nav-site-external">
+          <li><a href="https://github.com/keithwhor/nodal">GitHub</a></li>
+          <li><a href="http://www.polybit.com/">Polybit</a></li>
+        </ul>
+      </div>
+    </div>
+
+    
+
+    <section class="content wrap documentationContent">
+  <div class="nav-docs">
+  <!-- Docs Nav -->
+  
+    <div class="nav-docs-section">
+      <h3>Quick Start</h3>
+      <ul>
+        
+          <li>
+            <a href="/nodal/docs/getting-started.html">Getting Started</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/tutorial.html" class="active">Tutorial</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/thinking-in-nodal.html">Thinking in Nodal</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  
+    <div class="nav-docs-section">
+      <h3>Guides</h3>
+      <ul>
+        
+          <li>
+            <a href="/nodal/docs/why-nodal.html">Why Nodal?</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/graphql.html">GraphQL</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/conditional-joins.html">Conditional Joins</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/strong-parameters.html">Strong Parameters</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/sensitive-fields.html">Sensitive Fields</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/stateless-architecture.html">Stateless Architecture</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/tests-as-first-class-citizens.html">Tests As First Class Citizens</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/deep-joins.html">Deep Joins</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/cascading-joins.html">Cascading Joins</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/database-seeds.html">Database Seeds</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/middleware.html">Middleware</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/renderware.html">Renderware</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/scheduled-tasks.html">Scheduled Tasks</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/pg-json-support.html">PG json Support</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  
+    <div class="nav-docs-section">
+      <h3>Community Resources</h3>
+      <ul>
+        
+          <li>
+            <a href="/nodal/docs/videos.html">Videos</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  
+    <div class="nav-docs-section">
+      <h3>Reference</h3>
+      <ul>
+        
+          <li>
+            <a href="/nodal/docs/top-level-api.html">Top-Level API</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/generator-api.html">Generator API</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/database-api.html">Database API</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/glossary.html">Nodal Terminology</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+  
+
+  <!-- Tips Nav -->
+  
+</div>
+
+
+  <div class="inner-content">
+    <a class="edit-page-link" href="https://github.com/keithwhor/nodal/tree/master/docs/docs/tutorial.md" target="_blank">Edit on GitHub</a>
+    <h1>
+      Tutorial
+    </h1>
+    <div class="subHeader"></div>
+
+    <p>We&#39;ll be building a simple API server for a twitter clone called insta-tweet. It&#39;ll be a basic version of the APIs that allow users to create accounts, login and create content associated with their accounts like Twitter, Reddit or HackerNews.</p>
+
+<p>We&#39;ll provide:</p>
+
+<ul>
+<li>API end points for users and tweets</li>
+<li>User authentication using OAuth and session tokens</li>
+<li>Database migrations using PostgreSQL</li>
+</ul>
+
+<p>It&#39;ll also have a few neat features:</p>
+
+<ul>
+<li><strong>Input Validation</strong>: API requests will be validated before responses are generated.</li>
+<li><strong>Namespaced API</strong>: our API will be namespaced as v1 of our instatweet-api</li>
+<li><strong>Instant Deployment</strong>: we&#39;ll have our API live by the end of the tutorial.</li>
+</ul>
+
+<p>Want to skip all this and just see the source?</p>
+
+<p><a href="https://github.com/keithwhor/nodal/tree/master/examples/instatweet-api">It&#39;s all on GitHub</a>.</p>
+<h2><a class="anchor" name="install"></a>Install <a class="hash-link" href="#install">#</a></h2>
+<p>We&#39;ll start with a fresh global install of Nodal to make Nodal generators available at the command line. If you want to see alternatives to global installation of node packages, and the rationale for that approach, you can read more here. Make sure you have Nodal version 0.9.0 or greater.
+sudo npm install nodal -g</p>
+
+<p>Create a new project</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal new instatweet-api
+</code></pre></div>
+<p>After Nodal is done generating our server we can start it up!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ cd instatweet-api &amp;&amp; run nodal s
+</code></pre></div>
+<p>Our server should now be available at localhost:3000
+Let&#39;s double check:
+￼</p>
+<h2><a class="anchor" name="deployment"></a>Deployment <a class="hash-link" href="#deployment">#</a></h2>
+<p>Now that we checked that our Nodal server is working, let&#39;s deploy it.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal poly:register
+</code></pre></div>
+<p>You&#39;ll be prompted to enter a valid email and password.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal poly:create instatweet
+</code></pre></div>
+<p>The name &#39;instatweet&#39; may already be taken. If that&#39;s the case add unique identifier to your project name. This project name will be the base of the host name for your deployed API path.</p>
+
+<p>You should receive a response similar to the following:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal poly:create instatweet
+</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text">Creating project &quot;instatweet&quot;...
+Project created successfully!
+{ id: 3,
+  name: &#39;instatweet&#39;,
+  description: null,
+  service_type: &#39;api&#39;,
+  user_id: 3,
+  env: &#39;NODE_ENV=production&#39;,
+  created_at: &#39;2016-04-16T02:47:22.263Z&#39;,
+  updated_at: &#39;2016-04-16T02:47:22.264Z&#39;,
+  url: &#39;https://instatweet.api.poly.cloud&#39; }
+</code></pre></div>
+<p>Then from within your Nodal API directory, run:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal poly:deploy instatweet
+</code></pre></div>
+<p>This will upload and deploy the Nodal server in whatever directory you&#39;re currently in, using the project name you provide in the command line –not your Nodal project name. Our Nodal project is named instatweet-api, but our hosted project name will just be instatweet.</p>
+
+<p>Now visit https://instatweet.api.poly.cloud/ and you should receive the same response that we received at <code>localhost:3000/</code></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{
+  &quot;meta&quot;: {
+    &quot;total&quot;: 1,
+    &quot;count&quot;: 1,
+    &quot;offset&quot;: 0,
+    &quot;error&quot;: null
+  },
+  &quot;data&quot;: [
+    {
+      &quot;message&quot;: &quot;Welcome to your Nodal Project&quot;
+    }
+  ]
+}
+</code></pre></div>
+<p>We&#39;re deployed! From here on out, this tutorial will guide you through developing your API locally, before deploying it again. Whenever you&#39;re ready to deploy your local API, you can just run nodal poly:deploy instaweet and you&#39;re changes should be live!</p>
+<h2><a class="anchor" name="our-application-structure"></a>Our application Structure <a class="hash-link" href="#our-application-structure">#</a></h2>
+<p>Back to your Nodal project. Let&#39;s go one step at a time to avoid getting distracted by everything Nodal has generated for us.</p>
+<h3><a class="anchor" name="our-first-controller-an-example-of-nodal-generator-output"></a>Our First Controller: An Example of Nodal Generator Output <a class="hash-link" href="#our-first-controller-an-example-of-nodal-generator-output">#</a></h3>
+<p>Nodal generators are all about implementing idiomatic syntax and powerful design patterns that are consistent, clear, scalable and extensible.</p>
+
+<p>You&#39;ll notice that all Nodal modules follow a similar pattern:</p>
+
+<ul>
+<li>immediately-invoked-function-expression(IIFE) to wrap modules. This may change in the future, but you won&#39;t need to worry about it because Nodal generators will handle it for you. </li>
+<li>import dependencies explicitly. </li>
+<li>emulate classical inheritance by extending a base Nodal class. </li>
+<li>implement methods relevant to the concerns of the module. </li>
+</ul>
+
+<p>We&#39;ll start by looking at a Nodal controller, which extends Nodal.Controller and implements methods for handling requests to our API.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/index_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">IndexController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+    <span class="nx">get</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">({</span><span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Welcome to your Nodal Project&#39;</span><span class="p">});</span>
+
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">IndexController</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>The IndexController extends from the <code>Nodal.Controller</code> class, then defines the <code>get()</code> method for the IndexController instance of the <code>Nodal.Controller</code> class. Inside the <code>get()</code> method, we invoke the controller&#39;s <code>respond()</code> method to handle a GET request to our API&#39;s index path. This pattern of extending Nodal classes, implementing the methods of their instances, and utilizing Nodal methods in those implementations is consistent across all of Nodal. This pattern is similar to that of frameworks like Rails and Django. ES6 class syntax makes this pattern feel natural in Nodal.</p>
+
+<p>Clear and consistent design patterns are intended to make Nodal easy to get started with, powerful enough to address many API needs out of the box and consistent enough to keep your server application logic easy to follow as you extend your server beyond what Nodal generators provide.</p>
+
+<p>Our IndexController handles any GET requests to <code>localhost:3000/</code> by sending whatever response is passed to <code>this.respond()</code>.</p>
+<h2><a class="anchor" name="a-tweet-model"></a>A Tweet Model: <a class="hash-link" href="#a-tweet-model">#</a></h2>
+<p>Now that we&#39;ve had a look at some Nodal code, let&#39;s keep on building our API. The first thing our instatweet-api needs is a way to store tweets. Nodal uses a models layer to marshall data as it moves between our API endpoint and our database. We&#39;ll use a Nodal generator to generate a model that describes the tweets our API will handle. Each tweet has a user id and a body which is a string.</p>
+
+<p>Let&#39;s open up a new terminal window, since our first window is now running our server, andcd instatweet-api. From within our instatweet-api folder, we can use the following Nodal command to generate our Tweet model.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal g:model Tweet user_id:int body:string
+</code></pre></div>
+<p>In Nodal, we define the schema of our model in our generator command. In this case, a tweet has two fields: a user_id which is an integer, and a body which is a string. Nodal does the work to create a consistent interface between our model, our schema and our actual data table in our Postgres database.</p>
+
+<p>You&#39;ll see that the Nodal generator logs the files it generates in your console.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/models/tweet.js
+Create: ./db/migrations/2016040820210712__create_tweet.js
+</code></pre></div>
+<p>Using Nodal, we&#39;ve generated a tweet.js file in our models directory, and we&#39;ve generated something called a migration.</p>
+<h2><a class="anchor" name="our-first-migration"></a>Our First Migration: <a class="hash-link" href="#our-first-migration">#</a></h2>
+<p>Nodal uses a specific design pattern for managing our database as we develop our application. This pattern is built on an abstraction called a migration.
+Migrations offer a consistent and convenient way to alter your database schema over time. You can think of each migration as being a new version of the database. This is an idea borrowed from Rails, and you can read an in-depth article on migrations here: here</p>
+
+<p>For our purposes, what we need to know is that our Nodal generated a file, with a timestamp, in our server&#39;s db/migrations directory.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">./db/migrations/2016040820210712__create_tweet.js
+</code></pre></div>
+<p>If we look at this file, we&#39;ll see that it follows the same pattern as the index controller we looked at first: uses an IIFE to wrap the module, imports dependencies explicitly, emulates classical inheritance by extending a Nodal class, and implements methods relevant to the concerns of the module. In this case we&#39;re extending the Nodal.Migrations class. The constructor method is an implementation detail. The two methods to focus on here are the <code>up()</code> and <code>down()</code> methods.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./db/migrations/UTCTimestamp__create_tweet.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">CreateTweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Migration</span> <span class="p">{</span>
+
+    <span class="nx">constructor</span><span class="p">(</span><span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">super</span><span class="p">(</span><span class="nx">db</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="mi">2016041420441120</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="hll">    <span class="nx">up</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="p">[</span>
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;int&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;body&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
+</span><span class="hll">      <span class="p">];</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+<span class="hll">    <span class="nx">down</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="p">[</span>
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">dropTable</span><span class="p">(</span><span class="s2">&quot;tweets&quot;</span><span class="p">)</span>
+</span><span class="hll">      <span class="p">];</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">CreateTweet</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p><code>up()</code> will create a new tweets table using the schema we defined in the command line. <code>down()</code> will drop that table.</p>
+
+<p>In this way we can roll our database forward, or backward if needed, as we develop our API.</p>
+
+<p>Each time we use the generator to create a new model, we&#39;ll create a new migrations file that contains up and down migrations representing the new tables needed to match our models, and an operation that will drop those new tables and return us to a previous version of our database.</p>
+<h2><a class="anchor" name="our-first-model"></a>Our First Model <a class="hash-link" href="#our-first-model">#</a></h2>
+<p>Our command line generator created <code>./app/models/tweet.js</code> for us as well. Our model follows the same ES6 classical inheritance emulation pattern, extending our Tweet model from <code>Nodal.Model</code>. Our Tweet model sets our database using a generated config from our db directory. Then it sets the schema for our Tweet using an internal description of our tweet model schema.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/tweet.js</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+<span class="hll">  <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
+</span>
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
+</span>
+  <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div><h2><a class="anchor" name="back-to-migrations-lets-get-our-model-up-and-running"></a>Back to Migrations: Let&#39;s get our model up and running <a class="hash-link" href="#back-to-migrations-lets-get-our-model-up-and-running">#</a></h2>
+<p>Nodal provides a command line interface for executing the database operations that our server needs to set up our API database. We create our PostgreSQL database using the follow nodal command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:create
+</code></pre></div>
+<p>Generally, Nodal commands transparently log their activity.
+In the case of <code>db:create</code> we get something like this in our console:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">CREATE DATABASE &quot;instatweet_api_development&quot;
+[]
+730ms
+
+Database Info: Created empty database &quot;instatweet_api_development&quot;
+</code></pre></div>
+<p>This explicitly shows the Postgres command executed to create our empty database, as well as the name of our db.</p>
+
+<p>Next we run:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:prepare
+</code></pre></div>
+<p>This empties out our database and prepares for migration.6</p>
+
+<p>To run our migration we use:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db: migrate
+</code></pre></div>
+<p>This creates the tables in our database.</p>
+
+<p>To rollback a migration, we use:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:rollback
+</code></pre></div>
+<p>This roll&#39;s our database back to a prior migration</p>
+
+<p>Migrating will roll our database forward again:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:migrate
+</code></pre></div>
+<p>Every migration or rollback will print the schema of the current migration to the console for us, so we can keep track of what our database looks like at any moment.</p>
+
+<p>Additionally, running <code>db:migrate</code> when a new migration doesn&#39;t exist will return a message saying &quot;no pending migrations exist&quot;. Running db:rollback without having completed any migrations in the first place will throw an error. You can see the guide for migrations and rollbacks for more detail.</p>
+<h2><a class="anchor" name="back-to-controllers-lets-make-an-api-endpoint"></a>Back to Controllers: Let&#39;s make an api endpoint <a class="hash-link" href="#back-to-controllers-lets-make-an-api-endpoint">#</a></h2>
+<p>At this point we have a database, a tweet table in that database, a tweet model for interacting with that tweet table, and a tweet schema that describes our tweet in our model and our Postgres table. But we don&#39;t have a way to communicate with our Nodal instatweet-api externally. We need an API endpoint. For that we need to generate a controller that interfaces with our tweet model. In Nodal, we can generate controllers for specific models, and we can namespace our controllers and API endpoints, all in one command:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal g:controller v1 --for Tweet
+</code></pre></div>
+<p>The Nodal generators are smart enough to know that Tweet is a model that we&#39;ve already created. Therefor we can use a flag to specify that we&#39;d like to create a controller for a specific model.</p>
+
+<p>Additionally, we can namespace the controller for our model. The name space is then added to the URL path for our API end point. In this case &quot;v1&quot; is our namespace, which will give us an API end point for tweets that we can access at:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweet
+</code></pre></div>
+<p>As we build features of our API, we can use namespaces to organize those API end points. Practically speaking we could develop v2 of our API, while still maintaining v1 in production.</p>
+
+<p>So what does <code>g:controller v1 --for Tweet</code> get us? We can check our console:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/controllers/v1/tweets_controller.js
+Modify: ./app/router.js
+</code></pre></div>
+<p>First, we create our v1 name-spaced tweets_controller. The controllers that Nodal generates provide index, show, create, update and destroy methods, which all correspond to simple CRUD operations. The design pattern implemented here is based on frameworks like Rails.</p>
+
+<p>Omitting the IIFE wrapper implementation detail, our tweets controller, looks like this:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+<span class="kr">const</span> <span class="nx">Tweet</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/tweet.js&#39;</span><span class="p">);</span>
+
+<span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+  <span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+      <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">);</span>
+
+      <span class="p">});</span>
+
+  <span class="p">}</span>
+
+  <span class="nx">show</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">route</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+
+  <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+
+  <span class="nx">update</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">route</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+
+  <span class="nx">destroy</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">route</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s see if we can hit this endpoint.</p>
+
+<p>Using Postman, or curl, or whatever your favorite way to test an API endpoint, lets hit <code>localhost:3000/v1/tweets</code> with a GET request.</p>
+
+<p>Our response should look like this:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+    <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="router"></a>Router <a class="hash-link" href="#router">#</a></h2>
+<p>What was actually happening when we hit that tweets endpoint?</p>
+
+<p>Along with generating a controller, the generator command modified <code>./app/router.js.</code></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/controllers/v1/tweets_controller.js
+Modify: ./app/router.js
+</code></pre></div>
+<p>There are a couple things going on the router that aren&#39;t pertinent to this tutorial. You can check out the guides to middleware and renderware if you&#39;re curious. Highlighting the bits to focus on, we can see that we have a route for every controller in our API, like our index controller from the start of the tutorial. When Nodal generates a controller, it explicitly required that controller into the router and generates a route for that controller as well:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/router.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+
+  <span class="cm">/* Middleware */</span>
+  <span class="p">...</span>
+
+  <span class="cm">/* Renderware */</span>
+  <span class="p">...</span>
+
+  <span class="cm">/* Routes */</span>
+
+  <span class="kr">const</span> <span class="nx">IndexController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/index_controller.js&#39;</span><span class="p">);</span>
+
+<span class="hll">  <span class="cm">/* generator: begin imports */</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="kr">const</span> <span class="nx">V1TweetsController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/v1/tweets_controller.js&#39;</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="cm">/* generator: end imports */</span>
+</span>
+  <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">IndexController</span><span class="p">);</span>
+
+<span class="hll">  <span class="cm">/* generator: begin routes */</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/tweets/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1TweetsController</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="cm">/* generator: end routes */</span>
+</span>
+  <span class="k">return</span> <span class="nx">router</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>The Nodal generator explicitly required our namespaced tweets controller, created a regex for it, and created our new route for us.</p>
+
+<p>Nodal implements routes using a regex waterfall, where requests fall through each regex until the requested url string finds a regex match.</p>
+<h2><a class="anchor" name="testing-our-tweets-endpoint"></a>Testing our Tweets endpoint <a class="hash-link" href="#testing-our-tweets-endpoint">#</a></h2>
+<p>Now that we&#39;ve built our tweets endpoint, let&#39;s test it by sending a POST request with they word &quot;Hey&quot; in the body to <code>/v1/tweets</code></p>
+
+<p>Using Postman, we send our data using the <code>x-www-form-urlencoded</code> option.
+￼
+Or if you want to use curl from the command line:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">curl -d &quot;body=hey&quot; localhost:3000/v1/tweet
+</code></pre></div>
+<p>We&#39;ll assume you have a favorite way to test your API end points, and leave the choice of how to hit your API up to you.</p>
+
+<p>The <code>/v1/tweets</code> endpoint handles our POST request and responds with the data we sent in our POST request, which matches our definition of our tweet model. It also responds with an updated response metadata. All Nodal API responses adhere to this format.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"> <span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:46:18.069Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="creating-tweets-with-actual-content"></a>Creating tweets with actual content <a class="hash-link" href="#creating-tweets-with-actual-content">#</a></h2>
+<p>Let&#39;s keep on hitting the API with POST requests containing some other text in the body:</p>
+
+<p>&quot;Hello&quot;</p>
+
+<p>&quot;Hello, world!&quot;</p>
+
+<p>&quot;Goodbye, world!&quot;</p>
+
+<p>&quot;Goodbye, friend!&quot;</p>
+
+<p>&quot;Hello, friend!&quot;</p>
+
+<p>After every request we should see a response of the same format as:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, friend!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:47:12.063Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Great! We can persist data at our API!</p>
+<h2><a class="anchor" name="feature-api-input-validation"></a>Feature: API Input Validation <a class="hash-link" href="#feature-api-input-validation">#</a></h2>
+<p>One of the features we want to implement with our instatweet-API is input validation. That is we want to be able to reject requests to our API that have invalid input. This is an important part of maintaining an API, and Nodal makes it easy by providing input validation out of the box. We can use our tweet model to validate input using the .validates method, which takes as arguments:</p>
+
+<ul>
+<li><p>the field to validate</p></li>
+<li><p>the text string to respond with in the case that validation fails</p></li>
+<li><p>and an anonymous function that will evaluate to true or false using the data in the designated input field.</p></li>
+</ul>
+
+<p>Let&#39;s validate the body of our POST request to make sure that it both exists and is longer than 5 characters.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/tweet.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
+
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
+
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
+</span>
+  <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Then let&#39;s test it by sending a POST request with &quot;Hey!&quot; in the body. We should get a validation error!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Validation error&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;details&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;must be at least 5 characters&quot;</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now let&#39;s POST &quot;Hey there&quot; and we get a non-error response.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey there&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:48:13.073Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:48:13.075Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="query-strings"></a>Query Strings <a class="hash-link" href="#query-strings">#</a></h2>
+<p>If we hit <code>localhost:3000/v1/tweets</code> with a GET request, we&#39;ll get all of our tweets back to us in the body of the response.</p>
+
+<p>Nodal comes with support for multiple query strings:</p>
+
+<p>Here are a couple we can test:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?body__not_null
+
+localhost:3000/v1/tweets?body__startswith=he
+</code></pre></div>
+<p><code>body__startswith=he</code> doesn&#39;t work because the query is case sensitive.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?body__startswith=He
+
+localhost:3000/v1/tweets?body__endswith=friend!
+</code></pre></div>
+<p>For case insensitive we use <code>iendswith</code>:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?body__iendswith=frieNd!
+</code></pre></div>
+<p>For integer values, we can do greater-than-or-equal-to queries</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?id__gte=3
+</code></pre></div>
+<p>This will give us a response containing all tweets for which the ID is greater-than-or-equal-to 3.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?id__gte=3&amp;__count=2
+
+localhost:3000/v1/tweets?id__gte=3&amp;__offset=2&amp;__count=2
+</code></pre></div>
+<p>How&#39;s this all working? Is this magic, or does the developer have fine grained control over responding to query strings?</p>
+
+<p>If we look in our <code>tweets_controller.js</code> file, what we see is the chain of methods invoked on the query params</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+
+<span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+  <span class="nx">index</span><span class="p">(){</span>
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+<span class="hll">       <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+</span>       <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">);</span>
+
+      <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We can actually specify conditions for the response directly as an option hash of properties passed to <code>.where()</code>:</p>
+
+<p>We can replace this.params.query with something like <code>{id__gte: 3}</code>:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+
+<span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+<span class="hll">  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">id__gte</span><span class="o">:</span> <span class="mi">3</span><span class="p">})</span>
+</span>  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">);</span>
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>Now no matter our query string, we&#39;ll only get tweets that match the option hash passed to the <code>.where()</code> method. The query string and <code>.where()</code> option hash argument syntax is borrowed directly from Django&#39;s ORM.</p>
+<h2><a class="anchor" name="deleting-our-tweets"></a>Deleting Our Tweets <a class="hash-link" href="#deleting-our-tweets">#</a></h2>
+<p>Using the exact same query string we can also DELETE a tweet using a DELETE request to that same endpoint:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets/7
+</code></pre></div>
+<p>The Nodal server will respond with the tweet we&#39;re deleting, which is the tweet with ID 7.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, friend!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T22:59:11.858Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T22:59:11.861Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s double check by sending another DELETE request using the same query string:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets/7
+</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text">{
+  &quot;meta&quot;: {
+    &quot;total&quot;: 0,
+    &quot;count&quot;: 0,
+    &quot;offset&quot;: 0,
+    &quot;error&quot;: {
+      &quot;message&quot;: &quot;Could not find Tweet with id \&quot;7\&quot;.&quot;
+    }
+  },
+  &quot;data&quot;: []
+}
+</code></pre></div>
+<p>If we send a GET request to <code>localhost:3000/v1/tweets</code> we&#39;ll see that our tweet with ID 7 is gone.</p>
+
+<p>We can also go back through our server log, which is active in the terminal window where we started our Nodal server, and we can see the log of the tweet being deleted.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">DELETE FROM &quot;tweets&quot; WHERE (&quot;id&quot;) = ($1) RETURNING *
+[7]
+29ms
+</code></pre></div><h2><a class="anchor" name="a-user-model-and-authentication"></a>A User Model and Authentication <a class="hash-link" href="#a-user-model-and-authentication">#</a></h2>
+<p>Now that we&#39;ve covered the basics, the tutorial will speed up a bit.</p>
+
+<p>Nodal provides a generator for creating the foundation of a user model. We can use Nodal&#39;s command line generator flag --user to generate a user model. This flag does a lot under the hood, but at this point we&#39;re equipped to reason through what Nodal generates. The Nodal command to generate a user model is:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal g:model --user
+</code></pre></div>
+<p>You&#39;ll notice that this command takes a bit longer to run. That&#39;s because Nodal is installing dependencies for password security, encryption and hashing; specifically the bcrypt package. As always Nodal logs the files that it generates:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/models/user.js
+Create: ./db/migrations/2016041500085963__create_user.js
+</code></pre></div>
+<blockquote>
+<p>NOTE: If you run into problems with Nodal generators, remember that Nodal generators will log the changes made to your server. If, for example, you need to generate your user model again, you can remove the files that Nodal generated, and rerun generator commands from the command line. For example, if <code>$ nodal g:model --user</code> throws an error because installation of bcrypt required super user privileges, you can remove the generated files and then run <code>$ sudo nodal g:model --user</code>. Nodal generators are explicit, transparent and modular so that the developer can maintain fine grain control of their server.</p>
+</blockquote>
+
+<p>As in our tweet model, Nodal generates a new migration in our <code>db/migrations</code> directory, which –upon migration– creates a users table with three fields.</p>
+
+<ul>
+<li><p>email</p></li>
+<li><p>password</p></li>
+<li><p>username.</p></li>
+</ul>
+
+<p>Additionally, if you inspect the generated migration code, you&#39;ll see an example of setting properties on a data field in a Postgres table, and specifically that the email field must be unique.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//db/migrations/UTCTimestamp__create_user.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s2">&quot;use strict&quot;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">CreateUser</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Migration</span> <span class="p">{</span>
+
+    <span class="nx">constructor</span><span class="p">(</span><span class="nx">db</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kr">super</span><span class="p">(</span><span class="nx">db</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="mi">2016041423195808</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">up</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="p">[</span>
+<span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">createTable</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;email&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="s2">&quot;properties&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;unique&quot;</span><span class="o">:</span><span class="kc">true</span><span class="p">}},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;password&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">},{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;username&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="s2">&quot;string&quot;</span><span class="p">}])</span>
+</span>      <span class="p">];</span>
+
+    <span class="p">}</span>
+
+    <span class="nx">down</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="p">[</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">dropTable</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">)</span>
+      <span class="p">];</span>
+
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">CreateUser</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>The Nodal model generator, with the --user flag also generated a user model for us. Ignoring the boiler plate, the generator created a model that requires the bcrypt package, implements a <code>beforeSave()</code> method, implements a password verification, sets our database and user model schema, and invokes two input validations on email and password inputs to our user API end point.</p>
+
+<p>One step at a time that&#39;s:</p>
+
+<ul>
+<li><p>Requires the bcrypt package</p></li>
+<li><p>Implements a <code>beforeSave()</code> method. This method is invoked before data is saved to the database.</p></li>
+<li><p>Implements password verification.</p></li>
+<li><p>Sets our database and user model schema.</p></li>
+<li><p>Invokes two input validations on email and password inputs.</p></li>
+</ul>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/user.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+<span class="hll">  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+</span><span class="hll">  <span class="kr">const</span> <span class="nx">bcrypt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;bcrypt&#39;</span><span class="p">);</span>
+</span>
+  <span class="kr">class</span> <span class="nx">User</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{</span>
+
+<span class="hll">    <span class="nx">beforeSave</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">hasErrors</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasChanged</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">))</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">hash</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">hash</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Could not encrypt password&#39;</span><span class="p">));</span>
+</span><span class="hll">          <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">__safeSet__</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="nx">hash</span><span class="p">);</span>
+</span><span class="hll">          <span class="nx">callback</span><span class="p">();</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">callback</span><span class="p">();</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+<span class="hll">    <span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="nx">bcrypt</span><span class="p">.</span><span class="nx">compare</span><span class="p">(</span><span class="nx">unencrypted</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">        <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
+<span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">User</span><span class="p">);</span>
+</span>
+<span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;must be valid&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">v</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">match</span><span class="p">(</span><span class="sr">/.+@.+\.\w+/i</span><span class="p">));</span>
+</span><span class="hll">  <span class="nx">User</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters in length&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
+</span>
+  <span class="k">return</span> <span class="nx">User</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>This might seem like a lot to parse. But we&#39;re equipped to reason through it. Let&#39;s try to narrow our scope a bit, by referencing pieces of this generated code that are similar to our tweets model:</p>
+
+<p>Requiring bcrypt is pretty straightforward. The generator downloaded the bcrypt package into our node_modules folder. We&#39;ll be using methods from the bcrypt package to compare and encrypt our passwords.</p>
+
+<p>Setting the database and user model schema is part of the migrations design pattern. We can trust that our migrations handle the concerns of our database.</p>
+
+<p>Additionally, we covered validations earlier, so we don&#39;t need to pay close attention to the two invocations of <code>User.validates()</code>.</p>
+
+<p>That leaves the <code>beforeSave()</code> and the <code>verifyPassword()</code> methods!</p>
+
+<p>In our <code>beforeSave()</code> method, if the request being handled by our user model is not throwing an error, and the password is being changed, we&#39;ll handle any encryption errors, and encrypt the password followed by using <code>__safeSet__</code> to set the password field of our user model to a hash of the password. <code>__safeSet__</code> is just a set without validation.</p>
+
+<p><code>verifyPassword()</code> just uses bcrypt&#39;s compare method to compare passwords sent to the user model.</p>
+<h2><a class="anchor" name="migration"></a>Migration <a class="hash-link" href="#migration">#</a></h2>
+<p>To actually get our user model up and running, we just need to migrate!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:migrate
+</code></pre></div>
+<p>You should see output from Postgres in your console detailing the tables created.</p>
+<h2><a class="anchor" name="controller"></a>Controller <a class="hash-link" href="#controller">#</a></h2>
+<p>Let&#39;s see what happens if we try to hit our user endpoint with a GET request:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/users
+</code></pre></div>
+<p>We&#39;d get a 404!</p>
+
+<p>Why? Because while we used Nodal to generate a model, we haven&#39;t built a controller for that model.</p>
+
+<p>We can create our controller for our specific user model using the same generator command as we did for our tweets, but specifying that our controller is for our User model.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal g:controller v1 --for User
+</code></pre></div>
+<p>You should see in your console the changes that the Nodal generator has made to your server:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/controllers/v1/users_controller.js
+Modify: ./app/router.js
+</code></pre></div>
+<p>Nodal generated a new controller, and edited our router. This controller handles all of the same CRUD functionality that we had for our tweets, but now for our users! Also remember that we&#39;ve name-spaced our controllers to v1, so your Nodal API server should now have an endpoint available at <code>app/controllers/v1/users_controller.js</code> file. It should be nearly identical to the <code>tweets_controller.js</code> file.</p>
+<h2><a class="anchor" name="creating-users"></a>Creating users <a class="hash-link" href="#creating-users">#</a></h2>
+<p>Let&#39;s make a GET request to <code>localhost:3000/v1/users</code>.</p>
+
+<p>We get a response that indicates that we don&#39;t have any users. Good!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now lets make an empty POST request to <code>/v1/users</code></p>
+
+<p>We get a validation error, telling us our email must be valid and our password must be at least 5 characters in length.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Validation error&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;details&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;must be valid&quot;</span>
+        <span class="p">],</span>
+        <span class="nt">&quot;password&quot;</span><span class="p">:</span> <span class="p">[</span>
+          <span class="s2">&quot;must be at least 5 characters in length&quot;</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s send a valid email, password and username in our post request.</p>
+
+<ul>
+<li><p>email = keithwhor@gmail.com </p></li>
+<li><p>password = password </p></li>
+<li><p>username = keithwhor </p></li>
+</ul>
+
+<p>And what do we get?</p>
+
+<p>A response with our new user, indicating their email, their encrypted password and their username.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor@gmail.com&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;$2a$10$iKYZj7e18yr7qmhFhPQYPuTstzeuct3SXQrEzdxc8qLUd.Vykt8fS&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keitwhor&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T23:01:12.835Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T23:01:12.984Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Generally, we don&#39;t want to be sending around hashes of our users passwords. Nodal generators, however, make no assumptions about API response fields. Generators intentionally leave these hashed passwords in the default response to allow the API developer to manage the concern of security as necessary. Nodal will get you set up with the right hashing and encryption tools, but it&#39;s your job to make sure your Nodal server meets your security specification.</p>
+
+<p>You can see that our Nodal API will respond to a GET request to <code>/v1/users/</code> with this same information, since we only have one user at the moment:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor@gmail.com&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;password&quot;</span><span class="p">:</span> <span class="s2">&quot;$2a$10$iKYZj7e18yr7qmhFhPQYPuTstzeuct3SXQrEzdxc8qLUd.Vykt8fS&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keitwhor&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T23:01:45.510Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T23:01:45.621Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s fix the response interface so that we don&#39;t send the hashed password field in our response.</p>
+<h2><a class="anchor" name="api-endpoint-response-interface"></a>API Endpoint Response Interface <a class="hash-link" href="#api-endpoint-response-interface">#</a></h2>
+<p>Our <code>users_controller.js</code> file is where we specify the response data to API requests. We can specify an interface to describe those responses. We can edit any of our responses by adding an array specifying what model data we want to send in our response. In this case we&#39;ll add <code>[&#39;id&#39;,&#39;username&#39;,&#39;email&#39;,&#39;created_at&#39;]</code> as an argument to <code>this.respond()</code> on our index method in our <code>users_controller.js</code> file, which corresponds to a GET request to <code>/v1/users/</code> endpoint.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/users_controller.js</span>
+<span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
+
+<span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+<span class="hll">    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;username&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">]);</span>
+</span>
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>Now that we&#39;ve specified this interface, our requests get a response that only contains the data specified in the array passed to the <code>.respond()</code> method. If we send a GET request to <code>localhost:3000/v1/users</code> we get the following response, which corresponds to the interface we specified in the controller.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keitwhor&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor@gmail.com&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T16:52:54.835Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We have fine grained control over what data we send whenever we respond with any sort of model. You might want to go specify the interfaces for the rest of the generated API endpoints in out users_controller.js file!</p>
+<h2><a class="anchor" name="associating-models"></a>Associating Models <a class="hash-link" href="#associating-models">#</a></h2>
+<p>Now that we have tweets, and we have users, how do we use Nodal to associate tweets with users?</p>
+
+<p>All of our tweets have a <code>user_id</code> associated with them. We can use that <code>user_id</code> field to associate tweets with a specific user, based on joining their IDs,</p>
+
+<p>Not only that, we can do this right in our tweet model!</p>
+
+<p>First we require our User model into tweet.js.</p>
+
+<p>Then we can use the <code>Nodal.Model.joinsTo</code> method to join our tweet model to our user model, with a specification that a User has multiple tweets</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/tweet.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+<span class="hll">  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
+</span>
+  <span class="kr">class</span> <span class="nx">Tweet</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{}</span>
+
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">Tweet</span><span class="p">);</span>
+
+<span class="hll">  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span>
+</span>
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">validates</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">,</span> <span class="s1">&#39;must be at least 5 characters&#39;</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nx">Tweet</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p><code>joinsTo</code> and <code>{multiple:true}</code> is a combination of two associations from Rails: <code>has_many</code> and <code>belongs_to</code>. Additionally Nodal is strict about being &quot;bottom up&quot; with joins. Because Nodal is explicit about dependencies, we need to avoid cyclical joins; Nodal won&#39;t magically resolve them for you. Therefor the parent ID should always be in a child table, and never the other way around. Tweets belong to Users. Users are the parents, tweets are their children.</p>
+
+<p>Therefor we always go to the child model, require the parent, and <code>doChild.joinsTo(Parent, {multiple:true})</code></p>
+<h2><a class="anchor" name="query-strings-on-joined-tables"></a>Query Strings on Joined Tables <a class="hash-link" href="#query-strings-on-joined-tables">#</a></h2>
+<p>Now we can do some fun things with our API.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?user__username=keithwhor
+</code></pre></div>
+<p>This should give us all the tweets that share a <code>user_id</code> with the the id associated with the username &quot;keithwhor&quot;! Which at this point, is no tweets! None of the tweets that we sent in POST requests to our API had a <code>user_id</code> field. They all have a <code>&quot;user_id&quot;: null</code></p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We can see this if we send a GET request to the <code>/v1/tweets</code> endpoint.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:35:29.229Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:35:29.236Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:43:41.132Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:43:41.137Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, world\\!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:44:01.251Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:44:01.258Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Goodbye, world\\!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:44:43.373Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:44:43.379Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Goodbye, friend\\!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:45:13.263Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:45:13.269Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, friend\\!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:46:12.063Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-08T08:46:12.067Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s take a second and use our API to set up some mock data. We want to demonstrate that our API can handle multiple users, each with multiple tweets. So let&#39;s create a new user with a POST request to <code>/v1/users</code> with the following fields:</p>
+
+<ul>
+<li><p>email = jill@gmail.com </p></li>
+<li><p>password = password </p></li>
+<li><p>username = jill </p></li>
+</ul>
+
+<p>This is our second user, since we already created username keithwhor earlier.</p>
+
+<p>Then let&#39;s create 3 tweets for each user. This can be done in 6 POST requests to our <code>/v1/tweets</code> endpoint; 3 with <code>user_id = 1</code> and 3 with <code>user_id = 2</code>.</p>
+
+<p>With <code>user_id = 1</code> lets post the following in the body:</p>
+
+<p>&quot;Hello!&quot;</p>
+
+<p>&quot;Hello friend!&quot;</p>
+
+<p>&quot;Hello world!!&quot;</p>
+
+<p>With <code>user_id = 2</code> lets post the following in the body:</p>
+
+<p>&quot;Hey there!&quot;</p>
+
+<p>&quot;Hey there friend!&quot;</p>
+
+<p>&quot;Hey there world!!&quot;</p>
+
+<p>Now say we wanted the users data along with all of the users tweets?</p>
+
+<p>Now we can query for tweets based on usernames. A GET request to:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?user__username=keithwhor
+</code></pre></div>
+<p>Should give us:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:28:50.700Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:28:50.710Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello friend!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:06.059Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:06.060Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:11.157Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:11.157Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>And similarly a GET request to:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?user__username=jill
+</code></pre></div>
+<p>Should give us:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey there!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:26.779Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:26.779Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey there friend!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:31.423Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:31.423Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hey there world!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:35.908Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:35.908Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="joins-and-response-interfaces"></a>Joins and Response Interfaces <a class="hash-link" href="#joins-and-response-interfaces">#</a></h2>
+<p>You&#39;ll notice that while this query returns all the tweets belonging to the userid of the username passed to the query string, the response doesn&#39;t actually contain the user information itself.</p>
+
+<p>We can fix this easily by going to our tweets_controller and joining the user data into our <code>index()</code> method which handles GET requests to our tweets endpoint.</p>
+
+<p>First we user the query composer <code>join()</code> method to join the user model into the response. Second, we also specify the interface for the response.</p>
+
+<p>Let&#39;s say in our response, we want to show the tweet <code>id</code>, <code>body</code> and <code>created_at</code>, and only show the <code>user_id</code>, <code>username</code> and <code>created_at</code>. Our interface for the Tweet model <code>query()</code> joined with the User model would be</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">user</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;created_at&#39;</span><span class="p">]}]</span>
+</code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">Tweet</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/tweet.js&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+    <span class="nx">index</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="nx">Tweet</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">where</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">query</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+<span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">models</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;body&#39;</span><span class="p">,</span><span class="s1">&#39;created_at&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">user</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;created_at&#39;</span><span class="p">]}]);</span>
+</span>
+        <span class="p">});</span>
+
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>The string passed to the <code>.join()</code> is a reference to the model we would like to join. The reference syntax is just the Camel-case of the class name that we want to join.</p>
+
+<p>Now our request to <code>/v1/tweets?user__username=keithwhor</code> will respond with user data associated with each tweet.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:28:50.700Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:16:09.301Z&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello friend!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:06.059Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:16:09.301Z&quot;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello world!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:29:11.157Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;user&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="nt">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;keithwhor&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T19:16:09.301Z&quot;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="access-tokens"></a>Access tokens <a class="hash-link" href="#access-tokens">#</a></h2>
+<p>Generally speaking, if there exists a Nodal generator for some piece of our API server, we want to use it. Getting familiar with Nodal generators is one of the goals of this tutorial.</p>
+
+<p>Nodal provides a generator for access tokens/session management.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal g:model --access_token
+</code></pre></div>
+<p>This Nodal generator command generates two files:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/models/access_token.js
+Create: ./db/migrations/UTCTimeStamp__create_access_token.js
+</code></pre></div>
+<p>Our <code>./app/models/access_token.js</code> file has a lot going on. As always, we&#39;re equipped to interpret what Nodal has generated. This should begin to look familiar.</p>
+
+<p>Access tokens rely on verification of a user. If we look in <code>./app/models/access_token.js</code> we&#39;ll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.</p>
+
+<p>The static method <code>generateAccessTokenString()</code> uses crypto to generate an access token string.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/access_token.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+<span class="hll">  <span class="kr">const</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/user.js&#39;</span><span class="p">);</span>
+</span>
+<span class="hll">  <span class="kr">const</span> <span class="nx">crypto</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;crypto&#39;</span><span class="p">);</span>
+</span>
+  <span class="kr">class</span> <span class="nx">AccessToken</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Model</span> <span class="p">{</span>
+
+    <span class="kr">static</span> <span class="nx">generateAccessTokenString</span><span class="p">()</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="nx">crypto</span>
+        <span class="p">.</span><span class="nx">createHmac</span><span class="p">(</span><span class="s1">&#39;md5&#39;</span><span class="p">,</span> <span class="nx">crypto</span><span class="p">.</span><span class="nx">randomBytes</span><span class="p">(</span><span class="mi">512</span><span class="p">).</span><span class="nx">toString</span><span class="p">())</span>
+        <span class="p">.</span><span class="nx">update</span><span class="p">([].</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">))</span>
+        <span class="p">.</span><span class="nx">digest</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="kr">static</span> <span class="nx">login</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">grant_type</span> <span class="o">!==</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Must supply grant_type&#39;</span><span class="p">));</span>
+      <span class="p">}</span>
+
+      <span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">username</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">})</span>
+        <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">users</span> <span class="o">||</span> <span class="o">!</span><span class="nx">users</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;User not found&#39;</span><span class="p">));</span>
+
+          <span class="p">}</span>
+
+          <span class="kd">let</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">users</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+          <span class="nx">user</span><span class="p">.</span><span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+
+              <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid credentials&#39;</span><span class="p">));</span>
+
+            <span class="p">}</span>
+
+            <span class="k">new</span> <span class="nx">AccessToken</span><span class="p">({</span>
+              <span class="nx">user_id</span><span class="o">:</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span>
+              <span class="nx">access_token</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">generateAccessTokenString</span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">),</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">valueOf</span><span class="p">()),</span>
+              <span class="nx">token_type</span><span class="o">:</span> <span class="s1">&#39;bearer&#39;</span><span class="p">,</span>
+              <span class="nx">expires_at</span><span class="o">:</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">valueOf</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))),</span>
+              <span class="nx">ip_address</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">ip_address</span>
+            <span class="p">}).</span><span class="nx">save</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+
+          <span class="p">});</span>
+
+        <span class="p">});</span>
+
+    <span class="p">}</span>
+
+    <span class="kr">static</span> <span class="nx">verify</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">where</span><span class="p">({</span>
+          <span class="nx">access_token</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">auth</span><span class="p">.</span><span class="nx">access_token</span><span class="p">,</span>
+          <span class="nx">expires_at__gte</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">()</span>
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessTokens</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">accessTokens</span> <span class="o">||</span> <span class="o">!</span><span class="nx">accessTokens</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Your access token is invalid.&#39;</span><span class="p">));</span>
+
+          <span class="p">}</span>
+
+          <span class="kd">let</span> <span class="nx">accessToken</span> <span class="o">=</span> <span class="nx">accessTokens</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">accessToken</span><span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span> <span class="p">{</span>
+
+            <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Your access token belongs to an invalid user.&#39;</span><span class="p">));</span>
+
+          <span class="p">}</span>
+
+          <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">.</span><span class="nx">joined</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">));</span>
+
+        <span class="p">});</span>
+
+    <span class="p">}</span>
+
+    <span class="kr">static</span> <span class="nx">logout</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">accessToken</span><span class="p">.</span><span class="nx">destroy</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+
+      <span class="p">});</span>
+
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">setDatabase</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;db/main.js&#39;</span><span class="p">));</span>
+  <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">setSchema</span><span class="p">(</span><span class="nx">Nodal</span><span class="p">.</span><span class="nx">my</span><span class="p">.</span><span class="nx">Schema</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">AccessToken</span><span class="p">);</span>
+
+  <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">joinsTo</span><span class="p">(</span><span class="nx">User</span><span class="p">,</span> <span class="p">{</span><span class="nx">multiple</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+
+  <span class="k">return</span> <span class="nx">AccessToken</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Then we also have <code>login()</code>, <code>verify()</code> and <code>logout()</code> methods which you can look at in more depth as necessary. Nodal generators produce functioning code. Lets see if we can get our access tokens up and running.</p>
+
+<p>Remember that every time we generate a new model, Nodal generates new migration. To create the table corresponding to the generated model, we need to migrate!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:migrate
+</code></pre></div>
+<p>You can check your console for a log of the Postgres commands for creating our access token table.</p>
+
+<p>Our access token model also needs a controller. Remember that Nodal generators make it straightforward to link models and controllers using the <code>--for</code> flag:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">nodal g:controller v1 --for AccessToken
+</code></pre></div>
+<p>As always, our a log of the files generated and modified is available in our console:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">Create: ./app/controllers/v1/access_tokens_controller.js
+Modify: ./app/router.js
+</code></pre></div>
+<p>At this point we&#39;ve used our generator to build a controller that by default contains methods for handling standard CRUD operations. But we actually don&#39;t need any of those methods for access tokens.</p>
+
+<p>So lets go to <code>./app/controllers/v1/access_tokens_controller.js</code> and erase all those generated methods and build our first Nodal controller from just-about-scratch.</p>
+
+<p>First we need a method for creating an access token. To do this we use the login() method on the AccessToken model, inside of the access token controller&#39;s create() method. The login method takes two arguments, the first is the params passed to the request, and the second is the callback, which we&#39;ll use to generates the response on login.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/access_tokens_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">AccessToken</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/access_token.js&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">V1AccessTokensController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+<span class="hll">    <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">    <span class="p">}</span>
+</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">V1AccessTokensController</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Let&#39;s test this out to see how it works, starting with a GET request to <code>localhost:3000/v1/access_tokens</code></p>
+
+<p>We get a 501 - Not Implemented</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Not Implemented&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This makes sense! Our access_tokens controller doesn&#39;t have a defined <code>index()</code> or <code>show()</code> method. We erased them both! And we&#39;ve only implemented a create() method, which corresponds to handling a POST request.</p>
+
+<p>So now let&#39;s do a POST to <code>/v1/access_tokens</code>.</p>
+
+<p>And we get a response! In the response we see an error message &quot;Must supply grant_type&quot;</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{
+  &quot;meta&quot;: {
+    &quot;total&quot;: 0,
+    &quot;count&quot;: 0,
+    &quot;offset&quot;: 0,
+    &quot;error&quot;: {
+      &quot;message&quot;: &quot;Must supply grant_type&quot;
+    }
+  },
+  &quot;data&quot;: []
+}
+</code></pre></div>
+<p>If we go into <code>app/models/access_token.js</code> and look at the login method</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
+
+<span class="kr">static</span> <span class="nx">login</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">grant_type</span> <span class="o">!==</span> <span class="s1">&#39;password&#39;</span><span class="p">){</span>
+
+<span class="hll">    <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Must supply grant_type&#39;</span><span class="p">));</span>
+</span>
+  <span class="p">}</span>
+
+  <span class="p">...</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>we see the exact error that we just received in our response!</p>
+
+<p>A <code>grant_type</code> is part of the OAuth spec, and you can read a useful blog post about grant_types <a href="http://alexbilbie.com/2013/02/a-guide-to-oauth-2-grants/">here</a>.</p>
+
+<p>Let&#39;s add a <code>grant_type = password</code> to our POST request</p>
+
+<p>Now the response to our POST request gives us a &quot;User not found&quot; error! So our <code>grant_type</code> worked.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;User not found&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s go look at what else is happening in our access token model. After our <code>grant_type</code> check we have our query composer method chain!</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
+
+<span class="p">...</span>
+
+<span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">username</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">})</span>
+  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">users</span> <span class="o">||</span> <span class="o">!</span><span class="nx">users</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;User not found&#39;</span><span class="p">));</span>
+
+      <span class="p">}</span>
+
+    <span class="p">...</span>
+
+   <span class="p">})</span>
+
+<span class="nx">So</span> <span class="nx">lets</span> <span class="nx">supply</span> <span class="nx">a</span> <span class="err">`</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">keithwhor</span><span class="err">`</span> <span class="k">in</span> <span class="nx">our</span> <span class="nx">POST</span> <span class="nx">request</span><span class="o">!</span>
+
+<span class="nx">And</span> <span class="nx">now</span> <span class="nx">we</span> <span class="nx">get</span> <span class="nx">an</span> <span class="s2">&quot;Invalid credentials&quot;</span> <span class="nx">error</span> <span class="nx">message</span><span class="o">!</span>
+
+<span class="p">{</span>
+  <span class="s2">&quot;meta&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;total&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="s2">&quot;Invalid credentials&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Great! We know where that&#39;s probably coming from!</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
+
+<span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">where</span><span class="p">({</span><span class="nx">username</span><span class="o">:</span> <span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">username</span><span class="p">})</span>
+  <span class="p">.</span><span class="nx">end</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="p">...</span>
+
+    <span class="kd">let</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">users</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+    <span class="nx">user</span><span class="p">.</span><span class="nx">verifyPassword</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">password</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="o">!</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+
+<span class="hll">        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;Invalid credentials&#39;</span><span class="p">));</span>
+</span>
+      <span class="p">}</span>
+
+  <span class="p">})</span>
+</code></pre></div>
+<p>Sure enough there&#39;s our &#39;Invalid credentials&#39; error.</p>
+
+<p>So let&#39;s provide some credentials! Specifically, lets provide <code>password = password</code> in our POST request.</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;access_token&quot;</span><span class="p">:</span> <span class="s2">&quot;7142a4ea7b14b7774e1ef8ae3ec6f1ce&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;token_type&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;expires_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-05-15T21:11:57.219Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;ip_address&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T21:11:57.219Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T21:11:57.221Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Great! We generated an access token for a unique user!</p>
+<h2><a class="anchor" name="using-our-authentication-token"></a>Using Our Authentication Token <a class="hash-link" href="#using-our-authentication-token">#</a></h2>
+<p>At this point, if we send a POST request to <code>/v1/tweets</code> with text in the body, that text will be saved to the database. But the whole point of authentication is that we don&#39;t want non-registered users to be able to post tweets to our API. How do we use our access token to verify that a POST request to our API is coming from a registered, authenticated, logged-in user?</p>
+
+<p>Since this is a POST request to <code>/v1/tweets</code> the right place to start is at the <code>tweets_controller.js</code> file, and specifically the <code>create()</code> method in that file. Right now it doesn&#39;t have any kind of user verification logic. It just looks like this:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="nx">Tweet</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>When we create a controller using the Nodal generator, by default our generated controller will extend the <code>Nodal.Controller</code> class, while defining our 5 CRUD methods.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+  <span class="nx">index</span><span class="p">(){...}</span>
+  <span class="nx">show</span><span class="p">(){...}</span>
+  <span class="nx">create</span><span class="p">(){...}</span>
+  <span class="nx">update</span><span class="p">(){...}</span>
+  <span class="nx">destroy</span><span class="p">(){...}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>We can replace the default <code>Nodal.Controller</code> with an <code>AuthController</code> by requiring <code>./app/controllers/auth_controller.js</code> into our <code>tweets_controller</code> and then replacing <code>Nodal.Controller</code> with <code>AuthController</code>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/tweets_controller.js</span>
+<span class="hll"><span class="kr">const</span> <span class="nx">AuthController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/auth_controller.js&#39;</span><span class="p">);</span>
+</span>
+<span class="hll"><span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">AuthController</span> <span class="p">{</span>
+</span>  <span class="nx">index</span><span class="p">(){...}</span>
+  <span class="nx">show</span><span class="p">(){...}</span>
+  <span class="nx">create</span><span class="p">(){...}</span>
+  <span class="nx">update</span><span class="p">(){...}</span>
+  <span class="nx">destroy</span><span class="p">(){...}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>AuthController</code> itself also extends the <code>Nodal.Controller</code>, including all the methods we&#39;ve been using for our basic API end points, but provides an additional <code>authorize()</code> method.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+<span class="hll">    <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">AuthController</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Now we can go into the <code>create()</code> method of our Tweet controller, and use the <code>authorize()</code> method from the AuthController! And we can wrap our tweet creation logic in a callback that gets passed to authorize!</p>
+
+<p>Specifically, we&#39;ll pass an anonymous function as the callback to <code>this.authorize()</code>. That callback will be provided error object, an access token and our user. You can check the function signature of our <code>AuthoController</code> <code>authorize()</code> method to see that the callback it takes as an argument is up to us to define. We&#39;ll use <code>authorize()</code> to <code>verify()</code> the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model&#39;s <code>create()</code> method to create a tweet.</p>
+
+<p>That create methods looks like this:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+  <span class="kr">const</span> <span class="nx">Tweet</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/tweet.js&#39;</span><span class="p">);</span>
+
+  <span class="kr">const</span> <span class="nx">AuthController</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/controllers/auth_controller.js&#39;</span><span class="p">);</span>
+
+  <span class="kr">class</span> <span class="nx">V1TweetsController</span> <span class="kr">extends</span> <span class="nx">AuthController</span> <span class="p">{</span>
+
+    <span class="nx">index</span><span class="p">()</span> <span class="p">{...}</span>
+
+    <span class="nx">show</span><span class="p">()</span> <span class="p">{...}</span>
+
+<span class="hll">    <span class="nx">create</span><span class="p">(){</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">}</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">          <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+    <span class="nx">update</span><span class="p">()</span> <span class="p">{...}</span>
+
+    <span class="nx">destroy</span><span class="p">()</span> <span class="p">{...}</span>
+
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">V1TweetsController</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Then let&#39;s go to <code>auth_controller.js</code> and build out some authentication logic.</p>
+
+<p>Step 1 is to require our AccessToken model, so that we&#39;re able to verify that the access token exists in our access token table in our database.</p>
+
+<p>Step 2 is to use the <code>.verify()</code> method on our AccessToken model, and pass it the username and access token string, which it can use to check against the usernames and granted access tokens in the database. We also pass our callback to <code>.verify()</code>. You can go look at the function signature of the access token model&#39;s <code>.verify()</code> method to see what it does with our params and our callback. After these changes, our new AuthController will look like this:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">//app/controllers/auth_controller.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="s1">&#39;use strict&#39;</span><span class="p">;</span>
+
+  <span class="kr">const</span> <span class="nx">Nodal</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;nodal&#39;</span><span class="p">);</span>
+<span class="hll">  <span class="kr">const</span> <span class="nx">AccessToken</span> <span class="o">=</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;app/models/access_token.js&#39;</span><span class="p">);</span>
+</span>
+  <span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+    <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+
+<span class="hll">      <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+</span>
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">AuthController</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</code></pre></div>
+<p>Now let&#39;s hit our tweets endpoint again with a POST request! There&#39;s one more thing that we&#39;ll have to fix!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Your access token is invalid.&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We get an error message telling us that we&#39;re missing our access token!</p>
+
+<p>So let&#39;s add our access token as a query parameter!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
+</code></pre></div>
+<p>And it posted! But the new user is still null!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;I&#39;m authenticated!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:38:45.121Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:38:45.122Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Let&#39;s quick fix that in our controller&#39;s create method, by adding this line:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+    <span class="p">}</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>And we&#39;re there! A post to:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=7142a4ea7b14b7774e1ef8ae3ec6f1ce
+</code></pre></div>
+<p>Gets a response with the <code>user_id</code> corresponding to the access token:</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;I&#39;m authenticated, and I&#39;m a user!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:46:43.952Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:46:43.954Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>No access token? Rejected!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Your access token is invalid.&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Access token? Accepted!</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;I got my access token!&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:50:12.806Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-15T23:50:12.809Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="refactoring"></a>Refactoring <a class="hash-link" href="#refactoring">#</a></h2>
+<p>At this point, Nodal has given us a lot. And it&#39;s up to us to refine our implementation of our server logic.</p>
+
+<p>Let do a quick refactor that will highlight some useful pieces of how Nodal is written, and give you an idea of how you as the developer can choose how to best extend Nodal for your API server.</p>
+
+<p>We can actually refactor the error logic in our <code>tweets_controller.js</code> <code>create()</code> method, by removing it from the callback that we pass to <code>authorize()</code>:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/v1/tweets_controller.js</span>
+<span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+<span class="hll">    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">}</span>
+</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>We can then add it to the callback function passed to our <code>AccessToken.verify()</code> method invoked in the authorize method in our <code>auth_controller.js</code> file.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/controllers/auth_controller.js</span>
+<span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+<span class="hll">  <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+
+  <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>At this point, any call to <code>authorize()</code> will respond with an error –if there is an error– no matter where or when it&#39;s invoked.</p>
+
+<p>Or we can go further and move this error logic into our <code>AccessToken.verify()</code> callback:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
+<span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+  <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+
+    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+<span class="hll">      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="p">}</span>
+</span>
+      <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>And this way any call to <code>AccessToken.verify()</code> will respond to an error –if there is an error– no matter where or when it&#39;s invoked.</p>
+
+<p>With this refactor, we can actually remove the err all together from both the callback passed to <code>authorize()</code> and from the callback invoked on successful authorization.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>
+<span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+<span class="hll">  <span class="k">this</span><span class="p">.</span><span class="nx">authorize</span><span class="p">((</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">user_id</span> <span class="o">=</span> <span class="nx">user</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">);</span>
+
+    <span class="nx">Tweet</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">body</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">model</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/auth_controller.js</span>
+<span class="kr">class</span> <span class="nx">AuthController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+  <span class="nx">authorize</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">,</span> <span class="s1">&#39;no-store&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Pragma&#39;</span><span class="p">,</span> <span class="s1">&#39;no-cache&#39;</span><span class="p">);</span>
+
+    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">verify</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+
+      <span class="p">}</span>
+
+<span class="hll">      <span class="nx">callback</span><span class="p">(</span><span class="nx">accessToken</span><span class="p">,</span> <span class="nx">user</span><span class="p">);</span>
+</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>We can test any of these refactors by sending a POST with a valid token, and then another with an invalid token, and verifying the expected response.</p>
+<h2><a class="anchor" name="destroying-access-tokens"></a>Destroying Access Tokens <a class="hash-link" href="#destroying-access-tokens">#</a></h2>
+<p>The easiest way is just to send a DELETE request, to the <code>/v1/access_tokens</code> endpoint, providing the access token you want to delete as a query string argument.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/access_tokens/76ab6fca89b74d9d7333feb4ed799a88
+</code></pre></div>
+<p>If you test this, you&#39;ll get a 501 - Not Implemented</p>
+
+<p>By this point in the tutorial you may have an intuition as to what that error means, how to address it, and where you might implemented a solution.</p>
+
+<p>That error means we haven&#39;t implemented a <code>destroy()</code> method in our <code>access_tokens_controller.js</code> file.</p>
+
+<p>So let&#39;s implement a <code>destroy()</code> method that adheres to the same approach as our <code>create()</code> method. We&#39;ll use the logout method implemented by our AccessToken model</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/v1/access_tokens_controller.js</span>
+<span class="kr">class</span> <span class="nx">V1AccessTokensController</span> <span class="kr">extends</span> <span class="nx">Nodal</span><span class="p">.</span><span class="nx">Controller</span> <span class="p">{</span>
+
+  <span class="nx">create</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">login</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
+
+    <span class="p">});</span>
+
+  <span class="p">}</span>
+
+<span class="hll">  <span class="nx">destroy</span><span class="p">()</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="nx">AccessToken</span><span class="p">.</span><span class="nx">logout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">accessToken</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span><span class="hll">
+</span><span class="hll">      <span class="k">this</span><span class="p">.</span><span class="nx">respond</span><span class="p">(</span><span class="nx">err</span> <span class="o">||</span> <span class="nx">accessToken</span><span class="p">);</span>
+</span><span class="hll">
+</span><span class="hll">    <span class="p">});</span>
+</span><span class="hll">
+</span><span class="hll">  <span class="p">}</span>
+</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Now if we do a DELETE to <code>/v1/access_tokens/</code> without providing a token, we might expect to get an error response saying &quot;Your access token is invalid.&quot; The response this returns &quot;Not implemented&quot;.</p>
+
+<p>The logout method, at the moment however, seems to require an id in the path before the access_token can be added to a query.</p>
+
+<p>To delete our access token we need to insert an id into the path. The ID is not relevant to the token.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/access_tokens/1/?access_token=76ab6fca89b74d9d7333feb4ed799a88
+</code></pre></div><div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="kc">null</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+      <span class="nt">&quot;user_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="nt">&quot;access_token&quot;</span><span class="p">:</span> <span class="s2">&quot;76ab6fca89b74d9d7333feb4ed799a88&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;token_type&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;expires_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-05-16T01:42:52.345Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;ip_address&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-16T01:42:52.345Z&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;updated_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2016-04-16T01:42:52.347Z&quot;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Ideally we would want to omit the id in the path. Generally, Nodal tends to be transparent and consistent with it&#39;s behavior. If we look in <code>router.js</code> we see that the Nodal access token generator has added a route that includes the id:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/router.js</span>
+<span class="cm">/* generator: begin routes */</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/tweets/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1TweetsController</span><span class="p">);</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/users/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1UsersController</span><span class="p">);</span>
+<span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s1">&#39;/v1/access_tokens/{id}&#39;</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">V1AccessTokensController</span><span class="p">);</span>
+
+<span class="cm">/* generator: end routes */</span>
+</code></pre></div>
+<p>Removing <code>{id}</code> from this route string does not seem to resolve the issue. Additionally <code>router.route</code> is currently undocumented, and Nodal&#39;s source does not make it readily apparent how strings passed to the <code>route()</code> method produce API routes.</p>
+
+<p>We can go check our server log in our terminal window to see what was actually run in the DB</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">DELETE FROM &quot;access_tokens&quot; WHERE (&quot;id&quot;) = ($1) RETURNING *
+</code></pre></div>
+<p>We can verify that our access token is no longer valid by sending a post request to our <code>/v1/tweets</code> endpoint passing our now-deleted access token as a query string:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">localhost:3000/v1/tweets?access_token=76ab6fca89b74d9d7333feb4ed799a88
+</code></pre></div>
+<p>And we&#39;ll get an error message response</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="nt">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Your access token is invalid.&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;data&quot;</span><span class="p">:</span> <span class="p">[]</span>
+<span class="p">}</span>
+</code></pre></div><h2><a class="anchor" name="deploying-our-api"></a>Deploying Our API <a class="hash-link" href="#deploying-our-api">#</a></h2><h2><a class="anchor" name="congrats"></a>Congrats! <a class="hash-link" href="#congrats">#</a></h2>
+<p>You have just built a clean twitter API in a few simple steps. Learn more about why to use React, or dive into the API reference and start hacking! Good luck!</p>
+
+
+    <div class="docs-prevnext">
+      
+        <a class="docs-prev" href="/nodal/docs/getting-started.html">&larr; Prev</a>
+      
+      
+        <a class="docs-next" href="/nodal/docs/thinking-in-react.html">Next &rarr;</a>
+      
+    </div>
+  </div>
+</section>
+
+
+    <footer class="wrap">
+      <div class="left">
+        Made in Toronto + San Francisco<br>
+        <a href="/nodal/acknowledgements.html">Acknowledgements</a>
+      </div>
+      <div class="right">
+        &copy; 2016 Keith Horwood<br>
+        Documentation licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+      </div>
+    </footer>
+  </div>
+  <div id="fb-root"></div>
+
+  <!-- <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-41298772-1', 'facebook.github.io');
+    ga('send', 'pageview');
+
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=623268441017527";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    docsearch({
+      apiKey: '36221914cce388c46d0420343e0bb32e',
+      indexName: 'nodal',
+      inputSelector: '#algolia-doc-search'
+    });
+  </script> -->
+</body>
+</html>
