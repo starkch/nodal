@@ -48,5 +48,7 @@
     title: Generator API
   - id: database-api
     title: Database API
+  - id: polybit-api
+    title: Polybit API
   - id: glossary
     title: Nodal Terminology

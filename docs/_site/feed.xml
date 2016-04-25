@@ -3,8 +3,8 @@
 	<channel>
 		<title>Nodal</title>
 		<description>A web server for Node.js, optimized for building API services quickly and efficiently.</description>
-		<link>https://facebook.github.io/nodal</link>
-		<atom:link href="https://facebook.github.io/nodal/feed.xml" rel="self" type="application/rss+xml" />
+		<link>https://nsipplswezey.github.io/nodal</link>
+		<atom:link href="https://nsipplswezey.github.io/nodal/feed.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
 				<title>Nodal v0.0.9</title>
@@ -75,8 +75,8 @@ poly:run [project] [command]
 &lt;p&gt;Also keep up to date at &lt;a href=&quot;http://nodaljs.com/&quot;&gt;nodaljs.com&lt;/a&gt; as well as &lt;a href=&quot;http://github.com/keithwhor/nodal&quot;&gt;Nodal on GitHub&lt;/a&gt;.&lt;/p&gt;
 &lt;h2&gt;&lt;a class=&quot;anchor&quot; name=&quot;changelog&quot;&gt;&lt;/a&gt;Changelog &lt;a class=&quot;hash-link&quot; href=&quot;#changelog&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;</description>
 				<pubDate>2016-04-06T00:00:00-07:00</pubDate>
-				<link>https://facebook.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</link>
-				<guid isPermaLink="true">https://facebook.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</guid>
+				<link>https://nsipplswezey.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</link>
+				<guid isPermaLink="true">https://nsipplswezey.github.io/nodal/blog/2016/04/06/nodal-v0.0.9.html</guid>
 			</item>
 		
 	</channel>
