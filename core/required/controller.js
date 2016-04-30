@@ -8,8 +8,6 @@ module.exports = (() => {
   /**
   *  Basic Controller implementation
   *
-  *
-  *
   *  For example, this controller implements the `index()` method to handle a `GET` request, and respond with data resulting from a query to the *Tweet* model.
   *
   *```javascript
