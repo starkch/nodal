@@ -5,6 +5,44 @@ module.exports = (() => {
   const API = require('./api.js');
   const ExecutionQueue = require('./execution_queue.js');
 
+  /**
+  *  Basic Controller implementation
+  *
+  *
+  *
+  *  For example, this controller implements the `index()` method to handle a `GET` request, and respond with data resulting from a query to the *Tweet* model.
+  *
+  *```javascript
+  * module.exports = (function() {
+  *
+  *   'use strict';
+  *
+  *   const Nodal = require('nodal');
+  *   const Tweet = Nodal.require('app/models/tweet.js');
+  *   class V1TweetsController extends Nodal.Controller {
+  *
+  *     index() {
+  *
+  *       Tweet.query()
+  *         .where(this.params.query)
+  *         .end((err, models) => {
+  *
+  *           this.respond(err || models);
+  *
+  *         });
+  *
+  *       }
+  *
+  *     }
+  *
+  *   return V1TweetsController;
+  *
+  * })();
+  *```
+  * @class
+  *
+  */
+
   class Controller {
 
     constructor(path, method, requestHeaders, params, responder) {
@@ -109,10 +147,29 @@ module.exports = (() => {
       this.render();
     }
 
+    /**
+    * Method called when a route is hit with a GET request, intercepting the `Controller.get()` method. Intended to be overwritten when inherited.
+    */
     index() { this.get(); }
+
+    /**
+    * Method called when a route is hit with a GET request, intercepting the `Controller.get()` method. Intended to be overwritten when inherited.
+    */
     show() { this.get(); }
+
+    /**
+    * Method called when a route is hit with a PUT request, intercepting the `Controller.put()` method. Intended to be overwritten when inherited.
+    */
     update() { this.put(); }
+
+    /**
+    * Method called when a route is hit with a POST request, intercepting the `Controller.post()` method. Intended to be overwritten when inherited.
+    */
     create() { this.post(); }
+
+    /**
+    * Method called when a route is hit with a DELETE request, intercepting the `Controller.del()` method. Intended to be overwritten when inherited.
+    */
     destroy() { this.del(); }
 
     /**
