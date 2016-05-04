@@ -82,6 +82,7 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
+        ClientStorage[k] = v;
       }
 
     }
@@ -92,6 +93,7 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
+        return ClientStorage[k];
       }
 
     }
@@ -1716,22 +1718,21 @@ Modify: ./app/router.js
     <span class="p">...</span>
 
    <span class="p">})</span>
+</code></pre></div>
+<p>So let&#39;s supply a <code>username = keithwhor</code> in our POST request!</p>
 
-<span class="nx">So</span> <span class="nx">lets</span> <span class="nx">supply</span> <span class="nx">a</span> <span class="err">`</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">keithwhor</span><span class="err">`</span> <span class="k">in</span> <span class="nx">our</span> <span class="nx">POST</span> <span class="nx">request</span><span class="o">!</span>
-
-<span class="nx">And</span> <span class="nx">now</span> <span class="nx">we</span> <span class="nx">get</span> <span class="nx">an</span> <span class="s2">&quot;Invalid credentials&quot;</span> <span class="nx">error</span> <span class="nx">message</span><span class="o">!</span>
-
-<span class="p">{</span>
-  <span class="s2">&quot;meta&quot;</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">&quot;total&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="s2">&quot;Invalid credentials&quot;</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="p">[]</span>
-<span class="p">}</span>
+<p>And now we get an &quot;Invalid credentials&quot; error message!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{
+  &quot;meta&quot;: {
+    &quot;total&quot;: 0,
+    &quot;count&quot;: 0,
+    &quot;offset&quot;: 0,
+    &quot;error&quot;: {
+      &quot;message&quot;: &quot;Invalid credentials&quot;
+    }
+  },
+  &quot;data&quot;: []
+}
 </code></pre></div>
 <p>Great! We know where that&#39;s probably coming from!</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>

@@ -82,6 +82,7 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
+        ClientStorage[k] = v;
       }
 
     }
@@ -92,6 +93,7 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
+        return ClientStorage[k];
       }
 
     }
@@ -211,8 +213,8 @@
 
 <p></div>
   <script src="/nodal/js/marked.min.js"></script>
-  <script src="/nodal/js/examples/hello.js"></script>
-  <script src="/nodal/js/examples/timer.js"></script>
+  <script src="/nodal/js/examples/nodal-hello.js"></script>
+  <script src="/nodal/js/examples/nodal-timer.js"></script>
   <script src="/nodal/js/examples/todo.js"></script>
   <script src="/nodal/js/examples/markdown.js"></script>
 </section>
