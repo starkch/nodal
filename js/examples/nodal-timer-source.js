@@ -1,4 +1,3 @@
-
 var Timer = React.createClass({
   getInitialState: function() {
     return {secondsElapsed: 0};
@@ -8,10 +7,13 @@ var Timer = React.createClass({
   },
   componentDidMount: function() {
     //validate the current token if possible
+    var user = ClientStorage.getItem('username');
+    var pass = user + 'r0x';
+
     var postData = {
-      username : 'user_134',
+      username : user,
       grant_type : 'password',
-      password : 'user_134r0x'
+      password : pass,
     };
 
    //if current token doesn't exist, login and request a new one
