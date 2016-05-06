@@ -64,9 +64,9 @@ id: home
 
   </div>
   <script src="/nodal/js/marked.min.js"></script>
-  <script src="/nodal/js/examples/hello.js"></script>
-  <script src="/nodal/js/examples/timer.js"></script>
-  <script src="/nodal/js/examples/todo.js"></script>
+  <script src="/nodal/js/examples/nodal-hello.js"></script>
+  <script src="/nodal/js/examples/nodal-timer.js"></script>
+  <script src="/nodal/js/examples/nodal-todo.js"></script>
   <script src="/nodal/js/examples/markdown.js"></script>
 </section>
 <hr class="home-divider" />

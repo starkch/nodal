@@ -82,6 +82,7 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
+        ClientStorage[k] = v;
       }
 
     }
@@ -92,6 +93,7 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
+        return ClientStorage[k];
       }
 
     }
@@ -1472,7 +1474,7 @@ Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 
 <p>Access tokens rely on verification of a user. If we look in <code>./app/models/access_token.js</code> we&#39;ll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.</p>
 
-<p>The static method <code>generateAccessTokenString()</code> uses crypto to generate an access token string.</p>
+<p>The static method <code>generateAccessTokenString()</code> uses <code>crypto</code> to generate an access token string.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/models/access_token.js</span>
 <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
 
@@ -1589,7 +1591,9 @@ Create: ./db/migrations/UTCTimeStamp__create_access_token.js
 
 <span class="p">})();</span>
 </code></pre></div>
-<p>Then we also have <code>login()</code>, <code>verify()</code> and <code>logout()</code> methods which you can look at in more depth as necessary. Nodal generators produce functioning code. Lets see if we can get our access tokens up and running.</p>
+<p>Then we also have <code>login()</code>, <code>verify()</code> and <code>logout()</code> which manage the creation, verification and destruction of our token. We won&#39;t dissect these implementations in depth. Instead, use them as reference for the patterns you might following in structuring your own specific <code>model</code> methods.</p>
+
+<p>Nodal generators produce functioning code. Lets see if we can get our access tokens up and running.</p>
 
 <p>Remember that every time we generate a new model, Nodal generates new migration. To create the table corresponding to the generated model, we need to migrate!</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">$ nodal db:migrate
@@ -1716,22 +1720,21 @@ Modify: ./app/router.js
     <span class="p">...</span>
 
    <span class="p">})</span>
+</code></pre></div>
+<p>So let&#39;s supply a <code>username = keithwhor</code> in our POST request!</p>
 
-<span class="nx">So</span> <span class="nx">lets</span> <span class="nx">supply</span> <span class="nx">a</span> <span class="err">`</span><span class="nx">username</span> <span class="o">=</span> <span class="nx">keithwhor</span><span class="err">`</span> <span class="k">in</span> <span class="nx">our</span> <span class="nx">POST</span> <span class="nx">request</span><span class="o">!</span>
-
-<span class="nx">And</span> <span class="nx">now</span> <span class="nx">we</span> <span class="nx">get</span> <span class="nx">an</span> <span class="s2">&quot;Invalid credentials&quot;</span> <span class="nx">error</span> <span class="nx">message</span><span class="o">!</span>
-
-<span class="p">{</span>
-  <span class="s2">&quot;meta&quot;</span><span class="o">:</span> <span class="p">{</span>
-    <span class="s2">&quot;total&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;offset&quot;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="s2">&quot;Invalid credentials&quot;</span>
-    <span class="p">}</span>
-  <span class="p">},</span>
-  <span class="s2">&quot;data&quot;</span><span class="o">:</span> <span class="p">[]</span>
-<span class="p">}</span>
+<p>And now we get an &quot;Invalid credentials&quot; error message!</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">{
+  &quot;meta&quot;: {
+    &quot;total&quot;: 0,
+    &quot;count&quot;: 0,
+    &quot;offset&quot;: 0,
+    &quot;error&quot;: {
+      &quot;message&quot;: &quot;Invalid credentials&quot;
+    }
+  },
+  &quot;data&quot;: []
+}
 </code></pre></div>
 <p>Great! We know where that&#39;s probably coming from!</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">//app/models/access_token.js</span>
@@ -1843,7 +1846,7 @@ Modify: ./app/router.js
 </code></pre></div>
 <p>Now we can go into the <code>create()</code> method of our Tweet controller, and use the <code>authorize()</code> method from the AuthController! And we can wrap our tweet creation logic in a callback that gets passed to authorize!</p>
 
-<p>Specifically, we&#39;ll pass an anonymous function as the callback to <code>this.authorize()</code>. That callback will be provided error object, an access token and our user. You can check the function signature of our <code>AuthoController</code> <code>authorize()</code> method to see that the callback it takes as an argument is up to us to define. We&#39;ll use <code>authorize()</code> to <code>verify()</code> the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model&#39;s <code>create()</code> method to create a tweet.</p>
+<p>Specifically, we&#39;ll pass an anonymous function as the callback to <code>this.authorize()</code>. That callback will be provided error object, an access token and our user. You can check the function signature of our <code>AuthController</code> <code>authorize()</code> method to see that the callback it takes as an argument is up to us to define. We&#39;ll use <code>authorize()</code> to <code>verify()</code> the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model&#39;s <code>create()</code> method to create a tweet.</p>
 
 <p>That create methods looks like this:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// ./app/controllers/v1/tweets_controller.js</span>

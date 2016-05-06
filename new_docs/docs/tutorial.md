@@ -1436,7 +1436,7 @@ Our `./app/models/access_token.js` file has a lot going on. As always, we're equ
 
 Access tokens rely on verification of a user. If we look in `./app/models/access_token.js` we'll see an explicit import of the user model. Additionally, the access token model that Nodal generates uses the crpyto library –which we require explicitly– for generating access tokens.
 
-The static method `generateAccessTokenString()` uses crypto to generate an access token string.
+The static method `generateAccessTokenString()` uses `crypto` to generate an access token string.
 
 ```javascript{7,9}
 // ./app/models/access_token.js
@@ -1556,7 +1556,9 @@ module.exports = (function() {
 })();
 ```
 
-Then we also have `login()`, `verify()` and `logout()` methods which you can look at in more depth as necessary. Nodal generators produce functioning code. Lets see if we can get our access tokens up and running.
+Then we also have `login()`, `verify()` and `logout()` which manage the creation, verification and destruction of our token. We won't dissect these implementations in depth. Instead, use them as reference for the patterns you might following in structuring your own specific `model` methods.
+
+Nodal generators produce functioning code. Lets see if we can get our access tokens up and running.
 
 Remember that every time we generate a new model, Nodal generates new migration. To create the table corresponding to the generated model, we need to migrate!
 
@@ -1709,11 +1711,13 @@ User.query()
     ...
 
    })
+```
 
-So lets supply a `username = keithwhor` in our POST request!
+So let's supply a `username = keithwhor` in our POST request!
 
 And now we get an "Invalid credentials" error message!
 
+```
 {
   "meta": {
     "total": 0,
@@ -1857,7 +1861,7 @@ module.exports = (function() {
 
 Now we can go into the `create()` method of our Tweet controller, and use the `authorize()` method from the AuthController! And we can wrap our tweet creation logic in a callback that gets passed to authorize!
 
-Specifically, we'll pass an anonymous function as the callback to `this.authorize()`. That callback will be provided error object, an access token and our user. You can check the function signature of our `AuthoController` `authorize()` method to see that the callback it takes as an argument is up to us to define. We'll use `authorize()` to `verify()` the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model's `create()` method to create a tweet.
+Specifically, we'll pass an anonymous function as the callback to `this.authorize()`. That callback will be provided error object, an access token and our user. You can check the function signature of our `AuthController` `authorize()` method to see that the callback it takes as an argument is up to us to define. We'll use `authorize()` to `verify()` the user and then upon verification, invoke our callback. Our callback, after handling any errors, will use the tweet model's `create()` method to create a tweet.
 
 That create methods looks like this:
 

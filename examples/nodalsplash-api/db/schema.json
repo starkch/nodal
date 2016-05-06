@@ -1,6 +1,6 @@
 {
 
-  "migration_id": 2016041919461032,
+  "migration_id": 2016050422324121,
 
   "models": {
 
@@ -15,6 +15,20 @@
         {"name": "token_type", "type": "string", "properties": {}},
         {"name": "expires_at", "type": "datetime", "properties": {}},
         {"name": "ip_address", "type": "string", "properties": {}},
+        {"name": "created_at", "type": "datetime", "properties": {}},
+        {"name": "updated_at", "type": "datetime", "properties": {}}
+      ]
+
+    },
+
+    "Todo": {
+
+      "table": "todos",
+
+      "columns": [
+        {"name": "id", "type": "serial", "properties": {"nullable":false,"primary_key":true,"auto_increment":true}},
+        {"name": "user_id", "type": "int", "properties": {}},
+        {"name": "todo_list", "type": "json", "properties": {}},
         {"name": "created_at", "type": "datetime", "properties": {}},
         {"name": "updated_at", "type": "datetime", "properties": {}}
       ]

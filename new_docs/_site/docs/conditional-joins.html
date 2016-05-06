@@ -82,6 +82,7 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
+        ClientStorage[k] = v;
       }
 
     }
@@ -92,6 +93,7 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
+        return ClientStorage[k];
       }
 
     }
