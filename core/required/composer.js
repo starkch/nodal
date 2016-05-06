@@ -10,10 +10,12 @@ module.exports = (function() {
   /**
   * The query composer (ORM)
   *
-  *  The query composer provides the interface for translating the parameters of a request into the desired response.
+  *  The query composer provides the interface for database queries that produce data.
+  *
+  *  A typical use of the query composer is to translate the parameters of a request into the desired data to be sent in response.
   *
   *  A new **Composer(ORM)** instance is created with the `.query()` method on an instance of a **Model**.
-  *  For example, this is how we would create a **Composer** instance from our Tweet model, which then uses the query parameters to select data using an SQL WHERE clause, and once completed sends the result of the WHERE clause, back to the client in a response.
+  *  For example, this is how we would create a **Composer** instance from our Tweet model, which then uses the query parameters to select data using an SQL WHERE clause, and once completed sends the result of the query back to the client in a response.
   *
   *```javascript
   * module.exports = (function() {

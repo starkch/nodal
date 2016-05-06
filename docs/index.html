@@ -732,76 +732,6 @@
                   #permission
                 </a>
               <a
-                href='#ItemArray'
-                class='block bold'>
-                ItemArray
-              </a>
-                <a
-                  href='#ItemArray.from'
-                  class='regular block'>
-                  .from
-                </a>
-                <a
-                  href='#ItemArray.constructor'
-                  class='regular block'>
-                  #constructor
-                </a>
-                <a
-                  href='#ItemArray.setMeta'
-                  class='regular block'>
-                  #setMeta
-                </a>
-                <a
-                  href='#ItemArray.toObject'
-                  class='regular block'>
-                  #toObject
-                </a>
-              <a
-                href='#HourlyEntry'
-                class='block bold'>
-                HourlyEntry
-              </a>
-                <a
-                  href='#HourlyEntry.constructor'
-                  class='regular block'>
-                  #constructor
-                </a>
-                <a
-                  href='#HourlyEntry.getDateOffset'
-                  class='regular block'>
-                  #getDateOffset
-                </a>
-              <a
-                href='#MinutelyEntry'
-                class='block bold'>
-                MinutelyEntry
-              </a>
-                <a
-                  href='#MinutelyEntry.constructor'
-                  class='regular block'>
-                  #constructor
-                </a>
-                <a
-                  href='#MinutelyEntry.getDateOffset'
-                  class='regular block'>
-                  #getDateOffset
-                </a>
-              <a
-                href='#DailyEntry'
-                class='block bold'>
-                DailyEntry
-              </a>
-                <a
-                  href='#DailyEntry.constructor'
-                  class='regular block'>
-                  #constructor
-                </a>
-                <a
-                  href='#DailyEntry.getDateOffset'
-                  class='regular block'>
-                  #getDateOffset
-                </a>
-              <a
                 href='#WeeklyEntry'
                 class='block bold'>
                 WeeklyEntry
@@ -825,6 +755,21 @@
                   href='#StrongParam.constructor'
                   class='regular block'>
                   #constructor
+                </a>
+              <a
+                href='#HourlyEntry'
+                class='block bold'>
+                HourlyEntry
+              </a>
+                <a
+                  href='#HourlyEntry.constructor'
+                  class='regular block'>
+                  #constructor
+                </a>
+                <a
+                  href='#HourlyEntry.getDateOffset'
+                  class='regular block'>
+                  #getDateOffset
                 </a>
               <a
                 href='#GraphQuery'
@@ -862,6 +807,46 @@
                   #query
                 </a>
               <a
+                href='#ItemArray'
+                class='block bold'>
+                ItemArray
+              </a>
+                <a
+                  href='#ItemArray.from'
+                  class='regular block'>
+                  .from
+                </a>
+                <a
+                  href='#ItemArray.constructor'
+                  class='regular block'>
+                  #constructor
+                </a>
+                <a
+                  href='#ItemArray.setMeta'
+                  class='regular block'>
+                  #setMeta
+                </a>
+                <a
+                  href='#ItemArray.toObject'
+                  class='regular block'>
+                  #toObject
+                </a>
+              <a
+                href='#MinutelyEntry'
+                class='block bold'>
+                MinutelyEntry
+              </a>
+                <a
+                  href='#MinutelyEntry.constructor'
+                  class='regular block'>
+                  #constructor
+                </a>
+                <a
+                  href='#MinutelyEntry.getDateOffset'
+                  class='regular block'>
+                  #getDateOffset
+                </a>
+              <a
                 href='#ModelFactory'
                 class='block bold'>
                 ModelFactory
@@ -890,6 +875,21 @@
                   href='#ModelFactory.create'
                   class='regular block'>
                   #create
+                </a>
+              <a
+                href='#DailyEntry'
+                class='block bold'>
+                DailyEntry
+              </a>
+                <a
+                  href='#DailyEntry.constructor'
+                  class='regular block'>
+                  #constructor
+                </a>
+                <a
+                  href='#DailyEntry.getDateOffset'
+                  class='regular block'>
+                  #getDateOffset
                 </a>
               <a
                 href='#Daemon'
@@ -957,6 +957,16 @@
                   #put
                 </a>
               <a
+                href='#Middleware'
+                class='block bold'>
+                Middleware
+              </a>
+                <a
+                  href='#Middleware.exec'
+                  class='regular block'>
+                  #exec
+                </a>
+              <a
                 href='#ExecutionQueue'
                 class='block bold'>
                 ExecutionQueue
@@ -980,16 +990,6 @@
                   href='#ExecutionQueue.use'
                   class='regular block'>
                   #use
-                </a>
-              <a
-                href='#Middleware'
-                class='block bold'>
-                Middleware
-              </a>
-                <a
-                  href='#Middleware.exec'
-                  class='regular block'>
-                  #exec
                 </a>
               <a
                 href='#Renderware'
@@ -1026,9 +1026,10 @@
   
   
   <p>The query composer (ORM)</p>
-<p>The query composer provides the interface for translating the parameters of a request into the desired response.</p>
+<p>The query composer provides the interface for database queries that produce data.</p>
+<p>A typical use of the query composer is to translate the parameters of a request into the desired data to be sent in response.</p>
 <p>A new <strong>Composer(ORM)</strong> instance is created with the <code>.query()</code> method on an instance of a <strong>Model</strong>.
-For example, this is how we would create a <strong>Composer</strong> instance from our Tweet model, which then uses the query parameters to select data using an SQL WHERE clause, and once completed sends the result of the WHERE clause, back to the client in a response.</p>
+For example, this is how we would create a <strong>Composer</strong> instance from our Tweet model, which then uses the query parameters to select data using an SQL WHERE clause, and once completed sends the result of the query back to the client in a response.</p>
 <pre><code class="language-javascript">module.exports = (function() {
 
   'use strict';
@@ -5920,7 +5921,7 @@ Nodal.ModelArray
   
   
   <p>Singleton Parent Application class</p>
-<p>Handles exceptions, sets process message event listeners, creates server, sets router and handles server process shutdown.</p>
+<p>Handles server process exceptions, sets process message event listeners, creates server, sets router and handles server process shutdown.</p>
 
       <h4>Instance members</h4>
         <div class='collapsible' id='Application.getTime'>
@@ -6243,442 +6244,6 @@ Nodal.ModelArray
         </div>
 </section>
 </div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='ItemArray' class='mt0'>
-    ItemArray<span class='gray'></span>
-  </h2>
-    <p>
-      Extends
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
-    </p>
-  
-  
-  
-  
-  
-  <p>Array of Items, for easy conversion to Objects</p>
-
-      <h4>Static members</h4>
-        <div class='collapsible' id='ItemArray.from'>
-          <a href='#ItemArray.from'>
-            <code>
-              .from<span class='gray'>(arr)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Convert a normal Array into a ItemArray</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2 m2'>
-<section class='py2 clearfix'>
-  <h2 id='ItemArray.from' class='mt0'>
-    from<span class='gray'>(arr)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Convert a normal Array into a ItemArray</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
- <strong>arr</strong>
-          :
-          <div class='force-inline'>
-            <p>The array of child objects</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-      <h4>Instance members</h4>
-        <div class='collapsible' id='ItemArray.constructor'>
-          <a href='#ItemArray.constructor'>
-            <code>
-              #constructor<span class='gray'></span>
-            </code>
-            <div class='force-inline'>
-              <p>Create the ItemArray</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='ItemArray.constructor' class='mt0'>
-    constructor<span class='gray'></span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Create the ItemArray</p>
-
-</section>
-          </div>
-        </div>
-        <div class='collapsible' id='ItemArray.setMeta'>
-          <a href='#ItemArray.setMeta'>
-            <code>
-              #setMeta<span class='gray'>(data)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Sets metadata for the modelArray</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='ItemArray.setMeta' class='mt0'>
-    setMeta<span class='gray'>(data)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Sets metadata for the modelArray</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
- <strong>data</strong>
-          :
-          <div class='force-inline'>
-            <p>values to set</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-        <div class='collapsible' id='ItemArray.toObject'>
-          <a href='#ItemArray.toObject'>
-            <code>
-              #toObject<span class='gray'>(arrInterface)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Creates an Array of plain objects from the ModelArray, with properties matching an optional interface</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='ItemArray.toObject' class='mt0'>
-    toObject<span class='gray'>(arrInterface)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Creates an Array of plain objects from the ModelArray, with properties matching an optional interface</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
- <strong>arrInterface</strong>
-          :
-          <div class='force-inline'>
-            <p>Interface to use for object creation for each model</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='HourlyEntry' class='mt0'>
-    HourlyEntry<span class='gray'></span>
-  </h2>
-    <p>
-      Extends
-        <a href="#SchedulerEntry">SchedulerEntry</a>
-    </p>
-  
-  
-  
-  
-  
-  <p>SchedulerEntry extension for hourly (on the minute) execution</p>
-
-      <h4>Instance members</h4>
-        <div class='collapsible' id='HourlyEntry.constructor'>
-          <a href='#HourlyEntry.constructor'>
-            <code>
-              #constructor<span class='gray'>(scheduler, times)</span>
-            </code>
-            <div class='force-inline'>
-              
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='HourlyEntry.constructor' class='mt0'>
-    constructor<span class='gray'>(scheduler, times)</span>
-  </h2>
-  
-  
-  
-  
-  
-  
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li>Nodal.Scheduler
- <strong>scheduler</strong>
-          :
-          <div class='force-inline'>
-            <p>the scheduler the entry belongs to</p>
-
-          </div>
-        </li>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
- <strong>times</strong>
-          :
-          <div class='force-inline'>
-            <p>The times (in minutes) to execute the task</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-        <div class='collapsible' id='HourlyEntry.getDateOffset'>
-          <a href='#HourlyEntry.getDateOffset'>
-            <code>
-              #getDateOffset<span class='gray'>(cur)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Sets the offset to the nearest hour</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='HourlyEntry.getDateOffset' class='mt0'>
-    getDateOffset<span class='gray'>(cur)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Sets the offset to the nearest hour</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
- <strong>cur</strong>
-          :
-          <div class='force-inline'>
-            <p>The current Date</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='MinutelyEntry' class='mt0'>
-    MinutelyEntry<span class='gray'></span>
-  </h2>
-    <p>
-      Extends
-        <a href="#SchedulerEntry">SchedulerEntry</a>
-    </p>
-  
-  
-  
-  
-  
-  <p>SchedulerEntry extension for minutely (on the second) execution</p>
-
-      <h4>Instance members</h4>
-        <div class='collapsible' id='MinutelyEntry.constructor'>
-          <a href='#MinutelyEntry.constructor'>
-            <code>
-              #constructor<span class='gray'>(scheduler, times)</span>
-            </code>
-            <div class='force-inline'>
-              
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='MinutelyEntry.constructor' class='mt0'>
-    constructor<span class='gray'>(scheduler, times)</span>
-  </h2>
-  
-  
-  
-  
-  
-  
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li>Nodal.Scheduler
- <strong>scheduler</strong>
-          :
-          <div class='force-inline'>
-            <p>the scheduler the entry belongs to</p>
-
-          </div>
-        </li>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
- <strong>times</strong>
-          :
-          <div class='force-inline'>
-            <p>The times (in seconds) to execute the task</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-        <div class='collapsible' id='MinutelyEntry.getDateOffset'>
-          <a href='#MinutelyEntry.getDateOffset'>
-            <code>
-              #getDateOffset<span class='gray'>(cur)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Sets the offset to the nearest minute</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='MinutelyEntry.getDateOffset' class='mt0'>
-    getDateOffset<span class='gray'>(cur)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Sets the offset to the nearest minute</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
- <strong>cur</strong>
-          :
-          <div class='force-inline'>
-            <p>The current Date</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='DailyEntry' class='mt0'>
-    DailyEntry<span class='gray'></span>
-  </h2>
-    <p>
-      Extends
-        <a href="#SchedulerEntry">SchedulerEntry</a>
-    </p>
-  
-  
-  
-  
-  
-  <p>SchedulerEntry extension for daily (on the hour) execution</p>
-
-      <h4>Instance members</h4>
-        <div class='collapsible' id='DailyEntry.constructor'>
-          <a href='#DailyEntry.constructor'>
-            <code>
-              #constructor<span class='gray'>(scheduler, times)</span>
-            </code>
-            <div class='force-inline'>
-              
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='DailyEntry.constructor' class='mt0'>
-    constructor<span class='gray'>(scheduler, times)</span>
-  </h2>
-  
-  
-  
-  
-  
-  
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li>Nodal.Scheduler
- <strong>scheduler</strong>
-          :
-          <div class='force-inline'>
-            <p>the scheduler the entry belongs to</p>
-
-          </div>
-        </li>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
- <strong>times</strong>
-          :
-          <div class='force-inline'>
-            <p>The times (in hours) to execute the task</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-        <div class='collapsible' id='DailyEntry.getDateOffset'>
-          <a href='#DailyEntry.getDateOffset'>
-            <code>
-              #getDateOffset<span class='gray'>(cur)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Sets the offset to the nearest day</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='DailyEntry.getDateOffset' class='mt0'>
-    getDateOffset<span class='gray'>(cur)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Sets the offset to the nearest day</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
- <strong>cur</strong>
-          :
-          <div class='force-inline'>
-            <p>The current Date</p>
-
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
   <h2 id='WeeklyEntry' class='mt0'>
     WeeklyEntry<span class='gray'></span>
   </h2>
@@ -6819,6 +6384,101 @@ Nodal.ModelArray
           :
           <div class='force-inline'>
             
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='HourlyEntry' class='mt0'>
+    HourlyEntry<span class='gray'></span>
+  </h2>
+    <p>
+      Extends
+        <a href="#SchedulerEntry">SchedulerEntry</a>
+    </p>
+  
+  
+  
+  
+  
+  <p>SchedulerEntry extension for hourly (on the minute) execution</p>
+
+      <h4>Instance members</h4>
+        <div class='collapsible' id='HourlyEntry.constructor'>
+          <a href='#HourlyEntry.constructor'>
+            <code>
+              #constructor<span class='gray'>(scheduler, times)</span>
+            </code>
+            <div class='force-inline'>
+              
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='HourlyEntry.constructor' class='mt0'>
+    constructor<span class='gray'>(scheduler, times)</span>
+  </h2>
+  
+  
+  
+  
+  
+  
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li>Nodal.Scheduler
+ <strong>scheduler</strong>
+          :
+          <div class='force-inline'>
+            <p>the scheduler the entry belongs to</p>
+
+          </div>
+        </li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+ <strong>times</strong>
+          :
+          <div class='force-inline'>
+            <p>The times (in minutes) to execute the task</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+        <div class='collapsible' id='HourlyEntry.getDateOffset'>
+          <a href='#HourlyEntry.getDateOffset'>
+            <code>
+              #getDateOffset<span class='gray'>(cur)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Sets the offset to the nearest hour</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='HourlyEntry.getDateOffset' class='mt0'>
+    getDateOffset<span class='gray'>(cur)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Sets the offset to the nearest hour</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
+ <strong>cur</strong>
+          :
+          <div class='force-inline'>
+            <p>The current Date</p>
+
           </div>
         </li>
     </ul>
@@ -7121,6 +6781,252 @@ Nodal.ModelArray
         </div>
 </section>
 </div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='ItemArray' class='mt0'>
+    ItemArray<span class='gray'></span>
+  </h2>
+    <p>
+      Extends
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+    </p>
+  
+  
+  
+  
+  
+  <p>Array of Items, for easy conversion to Objects</p>
+
+      <h4>Static members</h4>
+        <div class='collapsible' id='ItemArray.from'>
+          <a href='#ItemArray.from'>
+            <code>
+              .from<span class='gray'>(arr)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Convert a normal Array into a ItemArray</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2 m2'>
+<section class='py2 clearfix'>
+  <h2 id='ItemArray.from' class='mt0'>
+    from<span class='gray'>(arr)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Convert a normal Array into a ItemArray</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+ <strong>arr</strong>
+          :
+          <div class='force-inline'>
+            <p>The array of child objects</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+      <h4>Instance members</h4>
+        <div class='collapsible' id='ItemArray.constructor'>
+          <a href='#ItemArray.constructor'>
+            <code>
+              #constructor<span class='gray'></span>
+            </code>
+            <div class='force-inline'>
+              <p>Create the ItemArray</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='ItemArray.constructor' class='mt0'>
+    constructor<span class='gray'></span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Create the ItemArray</p>
+
+</section>
+          </div>
+        </div>
+        <div class='collapsible' id='ItemArray.setMeta'>
+          <a href='#ItemArray.setMeta'>
+            <code>
+              #setMeta<span class='gray'>(data)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Sets metadata for the modelArray</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='ItemArray.setMeta' class='mt0'>
+    setMeta<span class='gray'>(data)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Sets metadata for the modelArray</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+ <strong>data</strong>
+          :
+          <div class='force-inline'>
+            <p>values to set</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+        <div class='collapsible' id='ItemArray.toObject'>
+          <a href='#ItemArray.toObject'>
+            <code>
+              #toObject<span class='gray'>(arrInterface)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Creates an Array of plain objects from the ModelArray, with properties matching an optional interface</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='ItemArray.toObject' class='mt0'>
+    toObject<span class='gray'>(arrInterface)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Creates an Array of plain objects from the ModelArray, with properties matching an optional interface</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+ <strong>arrInterface</strong>
+          :
+          <div class='force-inline'>
+            <p>Interface to use for object creation for each model</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='MinutelyEntry' class='mt0'>
+    MinutelyEntry<span class='gray'></span>
+  </h2>
+    <p>
+      Extends
+        <a href="#SchedulerEntry">SchedulerEntry</a>
+    </p>
+  
+  
+  
+  
+  
+  <p>SchedulerEntry extension for minutely (on the second) execution</p>
+
+      <h4>Instance members</h4>
+        <div class='collapsible' id='MinutelyEntry.constructor'>
+          <a href='#MinutelyEntry.constructor'>
+            <code>
+              #constructor<span class='gray'>(scheduler, times)</span>
+            </code>
+            <div class='force-inline'>
+              
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='MinutelyEntry.constructor' class='mt0'>
+    constructor<span class='gray'>(scheduler, times)</span>
+  </h2>
+  
+  
+  
+  
+  
+  
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li>Nodal.Scheduler
+ <strong>scheduler</strong>
+          :
+          <div class='force-inline'>
+            <p>the scheduler the entry belongs to</p>
+
+          </div>
+        </li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+ <strong>times</strong>
+          :
+          <div class='force-inline'>
+            <p>The times (in seconds) to execute the task</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+        <div class='collapsible' id='MinutelyEntry.getDateOffset'>
+          <a href='#MinutelyEntry.getDateOffset'>
+            <code>
+              #getDateOffset<span class='gray'>(cur)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Sets the offset to the nearest minute</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='MinutelyEntry.getDateOffset' class='mt0'>
+    getDateOffset<span class='gray'>(cur)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Sets the offset to the nearest minute</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
+ <strong>cur</strong>
+          :
+          <div class='force-inline'>
+            <p>The current Date</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
   <h2 id='ModelFactory' class='mt0'>
     ModelFactory<span class='gray'></span>
   </h2>
@@ -7338,6 +7244,101 @@ Nodal.ModelArray
           :
           <div class='force-inline'>
             
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='DailyEntry' class='mt0'>
+    DailyEntry<span class='gray'></span>
+  </h2>
+    <p>
+      Extends
+        <a href="#SchedulerEntry">SchedulerEntry</a>
+    </p>
+  
+  
+  
+  
+  
+  <p>SchedulerEntry extension for daily (on the hour) execution</p>
+
+      <h4>Instance members</h4>
+        <div class='collapsible' id='DailyEntry.constructor'>
+          <a href='#DailyEntry.constructor'>
+            <code>
+              #constructor<span class='gray'>(scheduler, times)</span>
+            </code>
+            <div class='force-inline'>
+              
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='DailyEntry.constructor' class='mt0'>
+    constructor<span class='gray'>(scheduler, times)</span>
+  </h2>
+  
+  
+  
+  
+  
+  
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li>Nodal.Scheduler
+ <strong>scheduler</strong>
+          :
+          <div class='force-inline'>
+            <p>the scheduler the entry belongs to</p>
+
+          </div>
+        </li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>
+ <strong>times</strong>
+          :
+          <div class='force-inline'>
+            <p>The times (in hours) to execute the task</p>
+
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+        <div class='collapsible' id='DailyEntry.getDateOffset'>
+          <a href='#DailyEntry.getDateOffset'>
+            <code>
+              #getDateOffset<span class='gray'>(cur)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Sets the offset to the nearest day</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='DailyEntry.getDateOffset' class='mt0'>
+    getDateOffset<span class='gray'>(cur)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Sets the offset to the nearest day</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a>
+ <strong>cur</strong>
+          :
+          <div class='force-inline'>
+            <p>The current Date</p>
+
           </div>
         </li>
     </ul>
@@ -7790,6 +7791,73 @@ dummy error app on the port provided.</p>
         </div>
 </section>
 </div><div class='py1'><section class='py2 clearfix'>
+  <h2 id='Middleware' class='mt0'>
+    Middleware<span class='gray'></span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Do not need to extend from this class for new Middleware, just use this as a reference template.</p>
+
+      <h4>Instance members</h4>
+        <div class='collapsible' id='Middleware.exec'>
+          <a href='#Middleware.exec'>
+            <code>
+              #exec<span class='gray'>(controller, data, callback)</span>
+            </code>
+            <div class='force-inline'>
+              <p>Execute the middleware.</p>
+
+            </div>
+          </a>
+          <div class='collapser border px2'>
+<section class='py2 clearfix'>
+  <h2 id='Middleware.exec' class='mt0'>
+    exec<span class='gray'>(controller, data, callback)</span>
+  </h2>
+  
+  
+  
+  
+  
+  <p>Execute the middleware.</p>
+
+    <h4>Parameters</h4>
+    <ul class='suppress-p-margin'>
+        <li>Nodal.Controller
+ <strong>controller</strong>
+          :
+          <div class='force-inline'>
+            <p>the Controller Instance</p>
+
+          </div>
+        </li>
+        <li>(
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+|
+<a href="https://nodejs.org/api/buffer.html">Buffer</a>
+)
+ <strong>data</strong>
+          :
+          <div class='force-inline'>
+            <p>The data about the be rendered</p>
+
+          </div>
+        </li>
+        <li> <strong>callback</strong>
+          :
+          <div class='force-inline'>
+            
+          </div>
+        </li>
+    </ul>
+</section>
+          </div>
+        </div>
+</section>
+</div><div class='py1'><section class='py2 clearfix'>
   <h2 id='ExecutionQueue' class='mt0'>
     ExecutionQueue<span class='gray'></span>
   </h2>
@@ -7923,73 +7991,6 @@ and last parameter is a completion callback.</p>
           <div class='force-inline'>
             <p>The item constructor (must have exec function) plus other arguments you wish to add to the queue.</p>
 
-          </div>
-        </li>
-    </ul>
-</section>
-          </div>
-        </div>
-</section>
-</div><div class='py1'><section class='py2 clearfix'>
-  <h2 id='Middleware' class='mt0'>
-    Middleware<span class='gray'></span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Do not need to extend from this class for new Middleware, just use this as a reference template.</p>
-
-      <h4>Instance members</h4>
-        <div class='collapsible' id='Middleware.exec'>
-          <a href='#Middleware.exec'>
-            <code>
-              #exec<span class='gray'>(controller, data, callback)</span>
-            </code>
-            <div class='force-inline'>
-              <p>Execute the middleware.</p>
-
-            </div>
-          </a>
-          <div class='collapser border px2'>
-<section class='py2 clearfix'>
-  <h2 id='Middleware.exec' class='mt0'>
-    exec<span class='gray'>(controller, data, callback)</span>
-  </h2>
-  
-  
-  
-  
-  
-  <p>Execute the middleware.</p>
-
-    <h4>Parameters</h4>
-    <ul class='suppress-p-margin'>
-        <li>Nodal.Controller
- <strong>controller</strong>
-          :
-          <div class='force-inline'>
-            <p>the Controller Instance</p>
-
-          </div>
-        </li>
-        <li>(
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-|
-<a href="https://nodejs.org/api/buffer.html">Buffer</a>
-)
- <strong>data</strong>
-          :
-          <div class='force-inline'>
-            <p>The data about the be rendered</p>
-
-          </div>
-        </li>
-        <li> <strong>callback</strong>
-          :
-          <div class='force-inline'>
-            
           </div>
         </li>
     </ul>
