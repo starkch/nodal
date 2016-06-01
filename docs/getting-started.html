@@ -82,7 +82,6 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
-        ClientStorage[k] = v;
       }
 
     }
@@ -93,7 +92,6 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
-        return ClientStorage[k];
       }
 
     }
@@ -237,6 +235,11 @@
             
           </li>
         
+          <li>
+            <a href="/nodal/docs/node-inspector-debugging.html">Debugging with node-inspector</a>
+            
+          </li>
+        
       </ul>
     </div>
   
@@ -314,8 +317,8 @@
 <p>If you&#39;re not ready to use npm yet, you can download the starter kit which includes a prebuilt local installation of Nodal and an example Nodal API server <code>instatweet-api</code>.</p>
 
 <div class="buttons-unit downloads">
-  <a href="/nodal/downloads/nodal-0.9.0.zip" class="button">
-    Download Starter Kit 0.9.0
+  <a href="/nodal/downloads/nodal-0.10.0.zip" class="button">
+    Download Starter Kit 0.10.0
   </a>
 </div>
 <h2><a class="anchor" name="next-steps"></a>Next Steps <a class="hash-link" href="#next-steps">#</a></h2>

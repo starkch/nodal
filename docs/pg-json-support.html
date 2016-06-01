@@ -82,7 +82,6 @@
 
         } catch (e) {
         // handle exception e, provide fallback, ..
-        ClientStorage[k] = v;
       }
 
     }
@@ -93,7 +92,6 @@
         return sessionStorage.getItem(k);
       } catch (e) {
         // handle exception e, provide fallback, ..
-        return ClientStorage[k];
       }
 
     }
@@ -234,6 +232,11 @@
         
           <li>
             <a href="/nodal/docs/pg-json-support.html" class="active">PG json Support</a>
+            
+          </li>
+        
+          <li>
+            <a href="/nodal/docs/node-inspector-debugging.html">Debugging with node-inspector</a>
             
           </li>
         
